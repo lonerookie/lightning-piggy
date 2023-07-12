@@ -46,6 +46,7 @@ int walletBalance = 0;
 void setup()
 {
     Serial.begin(115200);
+    Serial.println("Lightning Piggy v1.0.2 starting up");
 
     SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);
     display.init();
