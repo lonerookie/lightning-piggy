@@ -1,3 +1,10 @@
+// Code for the Lightning Piggy running on the TTGO LilyGo 2.66 inch ePaper hardware
+// https://www.lightningpiggy.com/
+//
+// Tested with:
+// Arduino IDE version 1.8.13
+// ESP32 Board Support version 2.0.6
+//
 #include <ArduinoJson.h>
 
 #define LILYGO_T5_V266
@@ -21,11 +28,12 @@
 GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
 GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
--const char* ssid     = "[SSID]"; // wifi SSID here
--const char* password = "[PASSWORD HERE]"; // wifi password here
-
-const char* host = "legend.lnbits.com"; // HOST NAME HERE E.G. legend.lnbits.com
-const char* invoiceKey = "[INVOICE KEY HERE]"; // lnbits wallet invoice hey here
+// These values get replaced with the user provided values by the Web Serial Installer for Lightning Piggy.
+// But you can also replace them manually yourself here if you don't plan on using the Web Installer.
+const char* ssid     = "REPLACETHISBYWIFISSID_REPLACETHISBYWIFISSID_REPLACETHISBYWIFISSID"; // wifi SSID here
+const char* password = "REPLACETHISBYWIFIKEY_REPLACETHISBYWIFIKEY_REPLACETHISBYWIFIKEY"; // wifi password here
+const char* host = "REPLACETHISBYLNBITSHOST_REPLACETHISBYLNBITSHOST_REPLACETHISBYLNBITSHOST"; // HOST NAME HERE E.G. legend.lnbits.com
+const char* invoiceKey = "REPLACETHISBYLNBITSKEY_REPLACETHISBYLNBITSKEY_REPLACETHISBYLNBITSKEY"; // lnbits wallet invoice hey here
 
 String walletBalanceText = "";
 String paymentDetails = "";
@@ -83,8 +91,8 @@ void loop()
   getLNURLPayments(5);
   display.update();
   delay(10000);
-  // getLNURLp();
-  // showLNURLpQR();
+  getLNURLp();
+  showLNURLpQR();
   // display.display(false); // full update
   hibernate(6 * 60 * 60);
 }
@@ -105,7 +113,7 @@ void printBalance() {
 void getWalletDetails() {
   const String url = "/api/v1/wallet";
   const String line = getEndpointData(url);
-  StaticJsonDocument<3000> doc;
+  DynamicJsonDocument doc(4096); // 4096 bytes is plenty for just the wallet details (id, name and balance info)
 
   DeserializationError error = deserializeJson(doc, line);
   if (error)
@@ -114,7 +122,12 @@ void getWalletDetails() {
     Serial.println(error.f_str());
   }
 
-  const char* walletName = doc["name"];
+  String walletName = doc["name"];
+
+  if (walletName == "null") {
+    Serial.println("ERROR: could not find wallet details on lnbits host " + String(host) + " with invoice/read key " + String(invoiceKey) + " so something's wrong! Did you make a typo?");
+  }
+
   walletBalance = doc["balance"];
   walletBalance = walletBalance / 1000;
 
@@ -132,7 +145,7 @@ void getLNURLPayments(int limit) {
   const uint8_t maxPaymentDetailStrLength = 30; // The maximum number of chars that should be displayed for each payment
   const String url = "/api/v1/payments?limit=" + String(limit);
   const String line = getEndpointData(url);
-  StaticJsonDocument<4000> doc;
+  DynamicJsonDocument doc(limit * 4096); // 4KB per lnurlpayment should be enough
   Serial.println("Got payments");
   Serial.println(line);
 
@@ -169,13 +182,12 @@ void getLNURLPayments(int limit) {
 
 /**
  * @brief Get the first available LNURLp from the wallet
- * 
- * @return String 
+ *
  */
-String getLNURLp() {
+void getLNURLp() {
   // Get the first lnurlp
   String lnurlpData = getEndpointData("/lnurlp/api/v1/links");
-  StaticJsonDocument<3000> doc;
+  DynamicJsonDocument doc(8192); // we don't know the size of the list of links for this wallet so don't skimp here
 
   DeserializationError error = deserializeJson(doc, lnurlpData);
   if (error)
@@ -186,19 +198,28 @@ String getLNURLp() {
   String lnurlpId = doc[0]["id"];
 
   lnurlpData = getEndpointData("/lnurlp/api/v1/links/" + lnurlpId);
-  error = deserializeJson(doc, lnurlpData);
+  DynamicJsonDocument firstlink(8192); // create new DynamicJsonDocument as recommended by the docs
+  error = deserializeJson(firstlink, lnurlpData);
   if (error)
   {
     Serial.print("deserializeJson() failed: ");
     Serial.println(error.f_str());
   }
-  String lnurlp = doc["lnurl"];
+  String lnurlp = firstlink["lnurl"];
   qrData = lnurlp;
   Serial.println(lnurlp);
+  if (lnurlp == "null") {
+    Serial.println("Warning, could not find lnurlp link for this wallet, did you create one?");
+    Serial.println("You can do so by activating the LNURLp extension in LNBits, clicking on the extension, and clicking 'NEW PAY LINK'");
+    Serial.println("You probably don't want to go for 'fixed amount', but rather for any amount.");
+  }
 }
 
 void showLNURLpQR() {
-  qrData = "LNURL1DP68GURN8GHJ7UMPW3EJUURH9AKXUATJD3CZ7CTSDYHHVVF0D3H82UNV9UEQDZ3CM3";
+  if (qrData == "null") {
+    Serial.println("INFO: not showing LNURLp QR code because no LNURLp code was found.");
+    return;
+  }
   const char *qrDataChar = qrData.c_str();
   QRCode qrcoded;
 
@@ -272,7 +293,7 @@ String getEndpointData(String endpointUrl) {
 void hibernate(int sleepTimeSeconds) {
   uint64_t deepSleepTime = (uint64_t)sleepTimeSeconds * (uint64_t)1000 * (uint64_t)1000;
   Serial.println("Going to sleep for seconds");
-  Serial.println(deepSleepTime);
+  Serial.println(sleepTimeSeconds);
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH,   ESP_PD_OPTION_OFF);
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
