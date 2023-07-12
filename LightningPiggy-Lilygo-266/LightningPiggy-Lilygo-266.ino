@@ -2,8 +2,18 @@
 // https://www.lightningpiggy.com/
 //
 // Tested with:
+// ============
 // Arduino IDE version 1.8.13
 // ESP32 Board Support version 2.0.6
+// Preferences -> Compiler warnings: Default
+// Tools -> Board -> ESP32 Arduino -> ESP32 Dev Module
+// Tools -> CPU Frequency: 240Mhz
+// Tools -> Flash Frequency: 80Mhz
+// Tools -> Flash Mode: QIO
+// Tools -> Flash Size: 4MB
+// Tools -> Partition Scheme: Default 4MB with spiffs (1.2MB APP, 1.5MB SPIFFS)
+// Tools -> Core Debug Level: Warn
+// Tools -> PSRAM: Disabled
 //
 #include <ArduinoJson.h>
 
@@ -46,7 +56,7 @@ int walletBalance = 0;
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Lightning Piggy v1.0.2 starting up");
+    Serial.println("Lightning Piggy v1.0.3 starting up");
 
     SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);
     display.init();
@@ -89,29 +99,27 @@ void loop()
 
   display.fillScreen(GxEPD_WHITE);
   printBalance();
-  getLNURLPayments(5);
+  getLNURLPayments(3);
   display.update();
   delay(10000);
   getLNURLp();
   showLNURLpQR();
-  // display.display(false); // full update
   hibernate(6 * 60 * 60);
 }
 
 void printBalance() {
+  Serial.println("Displaying balance...");
   int16_t x1, y1;
     uint16_t w, h;
     display.setFont(&Lato_Medium_26);
     display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(display.width() / 2 - w / 2, 40);
     display.print(walletBalanceText);
-    Serial.println("Printing balance");
-    // display.setCursor(20, 40);
-    // display.println(walletBalanceText);
 }
 
 
 void getWalletDetails() {
+  Serial.println("Getting wallet details...");
   const String url = "/api/v1/wallet";
   const String line = getEndpointData(url);
   DynamicJsonDocument doc(4096); // 4096 bytes is plenty for just the wallet details (id, name and balance info)
@@ -143,6 +151,7 @@ void getWalletDetails() {
  * @param limit 
  */
 void getLNURLPayments(int limit) {
+  Serial.println("Getting " + String(limit) + " LNURL payments...");
   const uint8_t maxPaymentDetailStrLength = 30; // The maximum number of chars that should be displayed for each payment
   const String url = "/api/v1/payments?limit=" + String(limit);
   const String line = getEndpointData(url);
@@ -155,8 +164,10 @@ void getLNURLPayments(int limit) {
   {
     Serial.print("deserializeJson() failed: ");
     Serial.println(error.f_str());
+    return;
   }
 
+  Serial.println("Displaying payment amounts and comments...");
   uint16_t yPos = 70;
   String output;
   for (JsonObject areaElems : doc.as<JsonArray>()) {
@@ -186,6 +197,7 @@ void getLNURLPayments(int limit) {
  *
  */
 void getLNURLp() {
+  Serial.println("Getting LNURLp link list...");
   // Get the first lnurlp
   String lnurlpData = getEndpointData("/lnurlp/api/v1/links");
   DynamicJsonDocument doc(8192); // we don't know the size of the list of links for this wallet so don't skimp here
@@ -198,6 +210,7 @@ void getLNURLp() {
   }
   String lnurlpId = doc[0]["id"];
 
+  Serial.println("Getting LNURLp link for LNURLp ID: " + lnurlpId);
   lnurlpData = getEndpointData("/lnurlp/api/v1/links/" + lnurlpId);
   DynamicJsonDocument firstlink(8192); // create new DynamicJsonDocument as recommended by the docs
   error = deserializeJson(firstlink, lnurlpData);
@@ -221,6 +234,8 @@ void showLNURLpQR() {
     Serial.println("INFO: not showing LNURLp QR code because no LNURLp code was found.");
     return;
   }
+  Serial.println("Building LNURLp QR code...");
+
   const char *qrDataChar = qrData.c_str();
   QRCode qrcoded;
 
@@ -230,6 +245,7 @@ void showLNURLpQR() {
   
   qrcode_initText(&qrcoded, qrcodeData, qrVersion, 0, qrDataChar);
 
+  Serial.println("Displaying LNURLp QR code...");
   int qrWidth = pixSize * qrcoded.size;
   int qrPosX = ((display.width() - qrWidth) / 2);
   // int qrPosY = ((EPD_HEIGHT - qrWidth) / 2);
@@ -259,8 +275,9 @@ void showLNURLpQR() {
  * @return String 
  */
 String getEndpointData(String endpointUrl) {
+  Serial.println("Fetching URL: " + endpointUrl);
   WiFiClientSecure client;
-  client.setInsecure(); //Some versions of WiFiClientSecure need this
+  client.setInsecure(); // see https://github.com/espressif/arduino-esp32/blob/master/libraries/WiFiClientSecure/README.md
 
   if (!client.connect(host, 443))
   {
