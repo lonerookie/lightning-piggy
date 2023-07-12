@@ -56,7 +56,7 @@ int walletBalance = 0;
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Lightning Piggy v1.0.3 starting up");
+    Serial.println("Lightning Piggy v1.0.4 starting up");
 
     SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);
     display.init();
@@ -294,18 +294,38 @@ String getEndpointData(String endpointUrl) {
                "X-Api-Key: " + invoiceKey + " \r\n" +
                "Content-Type: application/json\r\n" +
                "Connection: close\r\n\r\n";
+
   client.print(request);
+
+  int chunked = 0;
+  String line = "";
   while (client.connected())
   {
-    const String line = client.readStringUntil('\n');
+    line = client.readStringUntil('\n');
+    line.toLowerCase();
     if (line == "\r")
     {
       break;
+    } else if (line == "transfer-encoding: chunked\r") {
+      Serial.println("HTTP chunking enabled");
+      chunked = 1;
     }
   }
 
-  const String line = client.readString();
-  return line;
+  if (chunked == 0) {
+    line = client.readString();
+    return line;
+  } else {
+    // chunked means first length, then content, then length, then content, until length == "0"
+    // no need to support content that has newlines, as it's json so newlines are encoded as \n
+    String reply = "";
+    line = client.readStringUntil('\n');
+    while (line != "0\r") {
+      reply = reply + client.readStringUntil('\n');
+      line = client.readStringUntil('\n');
+    }
+    return reply;
+  }
 }
 
 void hibernate(int sleepTimeSeconds) {
