@@ -56,7 +56,7 @@ int walletBalance = 0;
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Lightning Piggy v1.0.4 starting up");
+    Serial.println("Lightning Piggy version 1.0.5 starting up");
 
     SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);
     display.init();
@@ -92,6 +92,7 @@ void setup()
 
     delay(100);
 }
+
 
 void loop()
 {
@@ -177,13 +178,16 @@ void getLNURLPayments(int limit) {
         int amount = areaElems["amount"];
         amount = amount / 1000; // millisats to sats
         const char* comment = areaElems["extra"]["comment"];
-        Serial.println(comment);
+        if (!comment) { // comments can also be a list
+          comment = areaElems["extra"]["comment"][0];
+        }
 
         display.setFont(&Lato_Medium_12);
         display.setCursor(10, yPos);
         String paymentDetail(comment);
         String paymentAmount(amount);
         output = paymentDetail.substring(0, maxPaymentDetailStrLength) + " " + paymentAmount + " sats";
+        Serial.println("getLNURLPayments output: " + output);
 
         printTextCenteredX(output, yPos);
         yPos += 19;
