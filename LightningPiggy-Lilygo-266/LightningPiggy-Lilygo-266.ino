@@ -74,13 +74,17 @@ int walletBalance = 0;
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Lightning Piggy version 1.0.6 starting up");
+    Serial.println("Lightning Piggy version 1.0.7 starting up");
 
     // turn on the green LED-IO12 on the PCB
     // otherwise there's no indication that the board is on when it's running on battery power
     // it will turn off when the board hibernates
     pinMode(12, OUTPUT);
     digitalWrite(12, HIGH);   // turn the LED on (HIGH is the voltage level)
+
+    // read and print battery level
+    int batteryLevel = analogRead(35);
+    Serial.println("Got battery level: " + String(batteryLevel));
 
     SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);
     display.init();
@@ -139,7 +143,11 @@ void printBalance() {
     display.setFont(&Lato_Medium_26);
     display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(display.width() / 2 - w / 2, 40);
-    display.print(walletBalanceText);
+    /* print battery level for testing:
+    int batteryLevel = analogRead(35);
+    Serial.println("Got battery level: " + String(batteryLevel));
+    display.print(walletBalanceText + " B:" + String(batteryLevel));
+    */
 }
 
 
@@ -291,8 +299,8 @@ void showLNURLpQR() {
       }
     }
   }
-  // display.setFont(&Lato_Medium_12);
-  // printTextCenteredX("Send me sats, please :)", display.height() - 20);
+  display.setFont(&Lato_Medium_12);
+  printTextCenteredX("Ready to receive satoshis!", display.height() - 10);
   display.update();
 }
 
@@ -435,6 +443,8 @@ int getQrCodeVersion() {
  * @return int The size of the QR code pixels
  */
 int getQrCodePixelSize(int qrCodeVersion) {
+  Serial.println("getQrCodePixelSize for qrCodeVersion " + String(qrCodeVersion));
+  
   int qrDisplayHeight = display.height() - 20; // qr code height in pixels
   // Using https://github.com/ricmoo/QRCode#data-capacities
 
@@ -479,10 +489,11 @@ int getQrCodePixelSize(int qrCodeVersion) {
       break;
   }
   int pixelHeight = floor(qrDisplayHeight / qrCodeHeight);
-  // Serial.println(F("qrCodeHeight pixel height is"));
-  // Serial.println(qrCodeHeight);
+  Serial.println(F("qrCodeHeight pixel height is"));
+  Serial.println(qrCodeHeight);
 
-  // Serial.println(F("Calced pixel height is"));
-  // Serial.println(pixelHeight);
-  return pixelHeight;
+  Serial.println(F("Calced pixel height is"));
+  Serial.println(pixelHeight);
+  //return pixelHeight;
+  return 2;
 }
