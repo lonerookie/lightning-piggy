@@ -110,22 +110,18 @@ void setup()
 
     display.fillScreen(GxEPD_WHITE);
     display.setFont(&Lato_Medium_20);
-    printTextCentered("Fetching wallet balance");
+    printTextCentered("Fetching info...");
     display.update();
 
-    Serial.println("");
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
-
-    delay(100);
 }
 
 
 void loop()
 {
   getWalletDetails();
-
   display.fillScreen(GxEPD_WHITE);
   printBalance();
   getLNURLPayments(3);
