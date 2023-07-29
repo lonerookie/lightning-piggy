@@ -74,7 +74,7 @@ int walletBalance = 0;
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Lightning Piggy version 1.0.7 starting up");
+    Serial.println("Lightning Piggy version 1.0.8 starting up");
 
     // turn on the green LED-IO12 on the PCB
     // otherwise there's no indication that the board is on when it's running on battery power
@@ -110,7 +110,7 @@ void setup()
 
     display.fillScreen(GxEPD_WHITE);
     display.setFont(&Lato_Medium_20);
-    printTextCentered("Updating Piggy");
+    printTextCentered("Fetching wallet balance");
     display.update();
 
     Serial.println("");
@@ -136,12 +136,23 @@ void loop()
   hibernate(6 * 60 * 60);
 }
 
+int displayHeight() {
+  // lilygo 2.66: 152
+  return 104; // lilygo 2.13
+}
+
+int displayWidth() {
+  // lilygo 2.66: 296
+  return 212; // lilygo 2.13
+}
+
 void printBalance() {
   Serial.println("Displaying balance...");
   int16_t x1, y1;
     uint16_t w, h;
     display.setFont(&Lato_Medium_26);
     display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &h);
+    Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h));
     display.setCursor(display.width() / 2 - w / 2, 40);
     /* print battery level for testing:
     int batteryLevel = analogRead(35);
@@ -283,7 +294,7 @@ void showLNURLpQR() {
 
   Serial.println("Displaying LNURLp QR code...");
   int qrWidth = pixSize * qrcoded.size;
-  int qrPosX = ((display.width() - qrWidth) / 2);
+  int qrPosX = ((displayWidth() - qrWidth) / 2);
   // int qrPosY = ((EPD_HEIGHT - qrWidth) / 2);
   int qrPosY = 10;
 
@@ -300,7 +311,7 @@ void showLNURLpQR() {
     }
   }
   display.setFont(&Lato_Medium_12);
-  printTextCenteredX("Ready to receive satoshis!", display.height() - 10);
+  printTextCenteredX("Ready to receive satoshis!", displayHeight() - 10);
   display.update();
 }
 
@@ -382,8 +393,8 @@ void printTextCentered(char* str) {
     uint16_t w, h;
 
     display.getTextBounds(str, 0, 0, &x1, &y1, &w, &h);
-    display.setCursor(display.width() / 2 - w / 2,
-                    display.height() / 2 - h / 2 );
+    display.setCursor(displayWidth() / 2 - w / 2,
+                    displayHeight() / 2 - h / 2 );
     display.print(str);
 }
 
@@ -392,7 +403,7 @@ void printTextCenteredX(String str, uint16_t yPos) {
     uint16_t w, h;
 
     display.getTextBounds(str, 0, 0, &x1, &y1, &w, &h);
-    display.setCursor(display.width() / 2 - w / 2, yPos );
+    display.setCursor(displayWidth() / 2 - w / 2, yPos );
     display.print(str);
 }
 
@@ -445,7 +456,7 @@ int getQrCodeVersion() {
 int getQrCodePixelSize(int qrCodeVersion) {
   Serial.println("getQrCodePixelSize for qrCodeVersion " + String(qrCodeVersion));
   
-  int qrDisplayHeight = display.height() - 20; // qr code height in pixels
+  int qrDisplayHeight = displayHeight() - 20; // qr code height in pixels
   // Using https://github.com/ricmoo/QRCode#data-capacities
 
   // Get the QR code size (blocks not pixels)
@@ -494,6 +505,6 @@ int getQrCodePixelSize(int qrCodeVersion) {
 
   Serial.println(F("Calced pixel height is"));
   Serial.println(pixelHeight);
-  //return pixelHeight;
-  return 2;
+  return pixelHeight;
+  // QR codes of height 1 are still scannable, but height 2 seems to be a safe "easy scan" value: return 2;
 }
