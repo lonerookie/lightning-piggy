@@ -154,6 +154,7 @@ void printBalance() {
     display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &h);
     Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h)); // typical value for Lato_Medium_26: 1,-19,118,20
     display.setCursor(displayWidth() / 2 - w / 2, 40);
+    display.print(walletBalanceText);
     /* print battery level for testing:
     int batteryLevel = analogRead(35);
     Serial.println("Got battery level: " + String(batteryLevel));
