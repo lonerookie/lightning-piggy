@@ -70,11 +70,13 @@ String qrData;
 uint8_t *framebuffer;
 
 int walletBalance = 0;
+uint16_t walletBalanceTextHeight;
+int qrSideSize;
 
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Lightning Piggy version 1.0.8 starting up");
+    Serial.println("Lightning Piggy version 1.1.0 starting up");
 
     // turn on the green LED-IO12 on the PCB
     // otherwise there's no indication that the board is on when it's running on battery power
@@ -89,47 +91,69 @@ void setup()
     SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);
     display.init();
 
-    display.setTextColor(GxEPD_BLACK);
-    display.setRotation(1);
-
+    // first erase entire display, otherwise old stuff might still be (faintly) there
     display.fillScreen(GxEPD_WHITE);
-    display.setFont(&Lato_Medium_20);
-    printTextCentered("Connecting to WiFi");
     display.update();
 
-    Serial.println();
-    Serial.print("Connecting to ");
-    Serial.println(ssid);
+    display.setTextColor(GxEPD_BLACK);
 
+    // partial update to full screen to preset for partial update of box window (this avoids strange background effects)
+    display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false);
+
+    display.setRotation(1);
+
+    display.setFont(&Lato_Medium_20);
+    String str = "Connecting to WiFi...";
+    int16_t x1, y1, cursor_x, cursor_y, box_x, box_y;
+    uint16_t w, h;
+
+    display.getTextBounds(str, 0, 0, &x1, &y1, &w, &h);
+    cursor_x = displayWidth() / 2 - w / 2;
+    cursor_y = displayHeight() / 2 - h / 2;
+    box_x = cursor_x;
+    box_y = cursor_y - h;
+    //Serial.println(String(box_x) + "," + String(box_y) + "," +String(cursor_x) + "," +String(cursor_y) + "," + String(w) + "," +String(h));
+    display.setCursor(cursor_x, cursor_y);
+    display.print(str);
+    displayBorder();
+    display.updateWindow(box_x,box_y,w,h,true);
+
+    Serial.println("Connecting to " + String(ssid));
     WiFi.begin(ssid, password);
-
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
     }
-
-    display.fillScreen(GxEPD_WHITE);
-    display.setFont(&Lato_Medium_20);
-    printTextCentered("Fetching info...");
-    display.update();
-
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
+
+    str = "Fetching info...";
+    display.fillRect(box_x, box_y, w, h, GxEPD_WHITE);
+    display.setCursor(cursor_x, cursor_y);
+    display.print(str);
+    display.updateWindow(box_x,box_y,w,h,true);
+    Serial.println("Fetching info should be visible now...");
+    delay(10000);
+
+    getWalletDetails();
+
+    display.fillScreen(GxEPD_WHITE);
+    displayBorder();
+    printBalance();
+    display.update();
+
+    getLNURLp();
+    showLNURLpQR();
+
+    getLNURLPayments(3);
+    display.update();
+    hibernate(6 * 60 * 60);
 }
 
 
-void loop()
-{
-  getWalletDetails();
-  display.fillScreen(GxEPD_WHITE);
-  printBalance();
-  getLNURLPayments(3);
-  display.update();
-  delay(10000);
-  getLNURLp();
-  showLNURLpQR();
-  hibernate(6 * 60 * 60);
+void loop() {
+  // empty loop function because it's one shot mode (for now)
 }
 
 int displayHeight() {
@@ -142,16 +166,35 @@ int displayWidth() {
   return 212; // lilygo 2.13
 }
 
+void displayBorder() {
+  horizontalLine();
+  verticalLine();
+}
+
+void horizontalLine() {
+    // Line for showing end of display
+    for (int16_t x = 0; x<displayWidth(); x++) {
+      display.drawPixel(x,displayHeight()+1,0);
+    }
+}
+void verticalLine() {
+    // Line for showing end of display
+    for (int16_t y = 0; y<displayHeight(); y++) {
+      display.drawPixel(displayWidth()+1,y,0);
+    }
+}
+
+
 void printBalance() {
   Serial.println("Displaying balance...");
   int16_t x1, y1;
     uint16_t w, h;
     display.setFont(&Lato_Medium_26);
-    display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &h);
-    Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h)); // typical value for Lato_Medium_26: 1,-19,118,20
-    display.setCursor(10, h);
+    display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &walletBalanceTextHeight);
+    Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(walletBalanceTextHeight)); // typical value for Lato_Medium_26: 1,-19,118,20
+    display.setCursor(1, walletBalanceTextHeight);
     display.print(walletBalanceText);
-    /* print battery level for testing:
+    /* add battery level for testing:
     int batteryLevel = analogRead(35);
     Serial.println("Got battery level: " + String(batteryLevel));
     display.print(walletBalanceText + " B:" + String(batteryLevel));
@@ -193,7 +236,7 @@ void getWalletDetails() {
  */
 void getLNURLPayments(int limit) {
   Serial.println("Getting " + String(limit) + " LNURL payments...");
-  const uint8_t maxPaymentDetailStrLength = 30; // The maximum number of chars that should be displayed for each payment
+  const uint8_t maxPaymentDetailStrLength = 33; // The maximum number of chars that should be displayed for each payment for Lato_Medium_12 in full width on 212 pixels.
   const String url = "/api/v1/payments?limit=" + String(limit);
   const String line = getEndpointData(url);
   DynamicJsonDocument doc(limit * 4096); // 4KB per lnurlpayment should be enough
@@ -209,7 +252,9 @@ void getLNURLPayments(int limit) {
   }
 
   Serial.println("Displaying payment amounts and comments...");
-  uint16_t yPos = 70;
+  uint16_t yPos = displayHeight();
+  int maxpixels = displayWidth();
+  unsigned int maxLinesPerComment = 2;
   String output;
   for (JsonObject areaElems : doc.as<JsonArray>()) {
     if(areaElems["extra"] && !areaElems["pending"] && areaElems["extra"]["tag"]) {
@@ -222,15 +267,31 @@ void getLNURLPayments(int limit) {
           comment = areaElems["extra"]["comment"][0];
         }
 
-        display.setFont(&Lato_Medium_12);
-        display.setCursor(10, yPos);
         String paymentDetail(comment);
         String paymentAmount(amount);
-        output = paymentDetail.substring(0, maxPaymentDetailStrLength) + " " + paymentAmount + " sats";
-        Serial.println("getLNURLPayments output: " + output);
+        paymentDetail = String(paymentAmount) + " sats: " + paymentDetail;
+        // first cut off max total length
+        paymentDetail = paymentDetail.substring(0, maxPaymentDetailStrLength * maxLinesPerComment);
 
-        printTextCenteredX(output, yPos);
-        yPos += 19;
+        // first calculate how many lines are needed
+        unsigned int linesNeeded = (paymentDetail.length() / maxPaymentDetailStrLength) + 1;
+        linesNeeded = min(maxLinesPerComment, linesNeeded);
+        Serial.println("linesNeeded = " + String(linesNeeded));
+
+        // cycle backwards through the lines to show, from the bottom to screen up
+        for (int line=linesNeeded-1;line>=0;line--) {
+          output = paymentDetail.substring(line*maxPaymentDetailStrLength, line*maxPaymentDetailStrLength+maxPaymentDetailStrLength);
+          Serial.println("getLNURLPayments output for line " + String(line) +" = " + output);
+          int16_t x1, y1;
+          uint16_t w, h;
+          display.setFont(&Lato_Medium_12);
+          Serial.println("setting cursor to " + String(yPos));
+          display.getTextBounds(output, 0, 0, &x1, &y1, &w, &h);
+          display.setCursor(0, yPos);
+          display.print(output);
+
+          yPos = yPos - h - 1;
+        }
       }
     }
   }
@@ -290,12 +351,9 @@ void showLNURLpQR() {
   qrcode_initText(&qrcoded, qrcodeData, qrVersion, 0, qrDataChar);
 
   Serial.println("Displaying LNURLp QR code...");
-  int qrWidth = pixSize * qrcoded.size;
-  int qrPosX = ((displayWidth() - qrWidth) / 2);
-  // int qrPosY = ((EPD_HEIGHT - qrWidth) / 2);
-  int qrPosY = 10;
-
-  display.fillScreen(GxEPD_WHITE);
+  qrSideSize = pixSize * qrcoded.size;
+  int qrPosX = displayWidth() - qrSideSize;
+  int qrPosY = 0;
 
   for (uint8_t y = 0; y < qrcoded.size; y++)
   {
@@ -307,9 +365,7 @@ void showLNURLpQR() {
       }
     }
   }
-  display.setFont(&Lato_Medium_12);
-  printTextCenteredX("Ready to receive satoshis!", displayHeight() - 10);
-  display.update();
+  display.updateWindow(qrPosX,qrPosY,qrSideSize,qrSideSize,true);
 }
 
 /**
@@ -364,9 +420,12 @@ String getEndpointData(String endpointUrl) {
     // no need to support content that has newlines, as it's json so newlines are encoded as \n
     String reply = "";
     line = client.readStringUntil('\n');
+    Serial.println("chunked reader got line: " + line);
     while (line != "0\r") {
       reply = reply + client.readStringUntil('\n');
+      Serial.println("chunked total reply = " + reply);
       line = client.readStringUntil('\n');
+      Serial.println("chunked reader got line: " + line);
     }
     return reply;
   }
@@ -502,6 +561,7 @@ int getQrCodePixelSize(int qrCodeVersion) {
 
   Serial.println(F("Calced pixel height is"));
   Serial.println(pixelHeight);
-  return pixelHeight;
-  // QR codes of height 1 are still scannable, but height 2 seems to be a safe "easy scan" value: return 2;
+  // QR codes of height 1 are still scannable, but height 2 seems to be a safe "easy scan" value.
+  // Return the minimal pixelHeight possible, to take up the least amount of space on the display:
+  return min(pixelHeight,2);
 }
