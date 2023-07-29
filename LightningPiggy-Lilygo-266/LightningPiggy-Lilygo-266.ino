@@ -33,12 +33,19 @@
 // - set "Webhook URL" to https://www.lightningpiggy.com/paymentreceived
 // - set a "Success message", like: Thanks for sending sats to my piggy
 //
+// Wakeup reasons:
+// - rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT): after flashing firmware or pushing the reset button
+// - rst:0x5 (DEEPSLEEP_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT): after wakeup from hibernate
+// - rst:0x10 (RTCWDT_RTC_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT): using the sliding switch
+// - watchdog reset
+
 #include <ArduinoJson.h>
 
 #define LILYGO_T5_V266
 #include <GxEPD.h>
 #include <boards.h>
 #include "qrcoded.h"
+#include "logos.h"
 
 #include <WiFiClientSecure.h>
 
@@ -76,7 +83,7 @@ int qrSideSize;
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Lightning Piggy version 1.1.0 starting up");
+    Serial.println("Lightning Piggy version 1.1.4 starting up");
 
     // turn on the green LED-IO12 on the PCB
     // otherwise there's no indication that the board is on when it's running on battery power
@@ -91,17 +98,25 @@ void setup()
     SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);
     display.init();
 
-    // first erase entire display, otherwise old stuff might still be (faintly) there
-    display.fillScreen(GxEPD_WHITE);
-    display.update();
-
-    display.setTextColor(GxEPD_BLACK);
-
     // partial update to full screen to preset for partial update of box window (this avoids strange background effects)
+    // this needs to be done before setRotation, otherwise still faint/missing pixels, even with using_rotation = true
     display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false);
 
+    // first erase entire display, otherwise old stuff might still be (faintly) there
+    display.fillScreen(GxEPD_WHITE);
+
+    // rotate 90 degrees
     display.setRotation(1);
 
+    // display a border to simulate the new low resolution display
+    displayBorder();
+    display.update();
+
+    // piggy logo to show the board is started
+    display.drawBitmap(piggyLogo, 0, 0, 104, 104, GxEPD_WHITE);
+    display.updateWindow(0, 0, 104, 104, true);
+
+    /*
     display.setFont(&Lato_Medium_20);
     String str = "Connecting to WiFi...";
     int16_t x1, y1, cursor_x, cursor_y, box_x, box_y;
@@ -117,6 +132,7 @@ void setup()
     display.print(str);
     displayBorder();
     display.updateWindow(box_x,box_y,w,h,true);
+    */
 
     Serial.println("Connecting to " + String(ssid));
     WiFi.begin(ssid, password);
@@ -128,6 +144,12 @@ void setup()
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
 
+    // bitcoin logo to show wifi is connected
+    display.drawBitmap(epd_bitmap_Bitcoin, displayWidth() - 104, 0, 104, 104, GxEPD_WHITE);
+    display.updateWindow(displayWidth() - 104, 0, 104, 104, true);
+
+
+    /*
     str = "Fetching info...";
     display.fillRect(box_x, box_y, w, h, GxEPD_WHITE);
     display.setCursor(cursor_x, cursor_y);
@@ -135,12 +157,19 @@ void setup()
     display.updateWindow(box_x,box_y,w,h,true);
     Serial.println("Fetching info should be visible now...");
     delay(10000);
+    */
+}
 
+
+void loop() {
     getWalletDetails();
 
     display.fillScreen(GxEPD_WHITE);
+    display.setTextColor(GxEPD_BLACK);
+
     displayBorder();
     printBalance();
+    display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false); // seems needed to avoid artifacts later on when doing partial draws
     display.update();
 
     getLNURLp();
@@ -149,11 +178,6 @@ void setup()
     getLNURLPayments(3);
     display.update();
     hibernate(6 * 60 * 60);
-}
-
-
-void loop() {
-  // empty loop function because it's one shot mode (for now)
 }
 
 int displayHeight() {
