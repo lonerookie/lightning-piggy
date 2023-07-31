@@ -38,6 +38,20 @@
 // - rst:0x5 (DEEPSLEEP_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT): after wakeup from hibernate
 // - rst:0x10 (RTCWDT_RTC_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT): using the sliding switch
 // - watchdog reset
+//
+// Battery levels:
+// - USB specification is 4.35V as absolute minimum
+// - Lithium and LiFePo4 is 4.20V as safe voltage/charge cut-off so assume 4.25V absolute maximum
+// => 4.30V should be a good threshold for determining whether the device is battery or USB powered
+//
+// Battery levels as measured:
+// - 2493*2 = 4.986V: USB-to-serial powered
+//
+// TODO:
+// - battery voltage
+// - metrics
+// - vibration sensor refresh
+// - user button refresh
 
 #include <ArduinoJson.h>
 
