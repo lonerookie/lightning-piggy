@@ -181,6 +181,7 @@ void loop() {
     display.fillScreen(GxEPD_WHITE);
     display.setTextColor(GxEPD_BLACK);
 
+    displayVoltage();
     displayBorder();
     printBalance();
     display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false); // seems needed to avoid artifacts later on when doing partial draws
@@ -222,6 +223,37 @@ void verticalLine() {
     }
 }
 
+void displayVoltage() {
+    // read and print battery level
+    int totalLevel = 0;
+    Serial.println("before reading...");
+    for (int multiread=0; multiread<10; multiread++) {
+      Serial.println("read " + String(multiread));
+      totalLevel += analogRead(35);
+      delay(100);
+      Serial.println("after read " + String(multiread));
+    }
+
+    totalLevel = totalLevel / 10;
+    double voltage = (totalLevel * 1.72) / 1000;
+
+    Serial.println("Got battery level avg 10: " + String(totalLevel));
+    Serial.println("calibrated voltage: " + String(voltage));
+
+    //String batteryString(totalLevel);
+    String voltageString(voltage);
+    voltageString += "V";
+    //const char *batteryChar = batteryString.c_str();
+    const char *voltageChar = voltageString.c_str();
+    display.setFont(&Lato_Medium_12);
+    //display.setCursor(104,20);
+    //display.print((char*)batteryChar);
+    int16_t x1, y1;
+    uint16_t w, h;
+    display.getTextBounds((char*)voltageChar, 0, 0, &x1, &y1, &w, &h);
+    display.setCursor(displayWidth()-w,104);
+    display.print((char*)voltageChar);
+}
 
 void printBalance() {
   Serial.println("Displaying balance...");
@@ -483,7 +515,7 @@ void hibernate(int sleepTimeSeconds) {
 
 
 void printTextCentered(char* str) {
-  int16_t x1, y1;
+    int16_t x1, y1;
     uint16_t w, h;
 
     display.getTextBounds(str, 0, 0, &x1, &y1, &w, &h);
