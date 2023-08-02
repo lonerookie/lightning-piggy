@@ -38,22 +38,18 @@
 // - rst:0x5 (DEEPSLEEP_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT): after wakeup from hibernate
 // - rst:0x10 (RTCWDT_RTC_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT): using the sliding switch
 // - watchdog reset
-//
-// Battery levels:
-// - USB specification is 4.35V as absolute minimum
-// - Lithium and LiFePo4 is 4.20V as safe voltage/charge cut-off so assume 4.25V absolute maximum
-// => 4.30V should be a good threshold for determining whether the device is battery or USB powered
-//
-// Battery levels as measured:
-// - 2493*2 = 4.986V: USB-to-serial powered
-//
+
 // TODO:
-// - battery voltage
+// - battery voltage warning if low
 // - metrics
-// - vibration sensor refresh
-// - user button refresh
 
 #include <ArduinoJson.h>
+
+// for rtc_gpio_pullup_dis and rtc_gpio_pulldown_en
+#include "driver/rtc_io.h"
+// for rtc_get_reset_reason
+#include <rom/rtc.h>
+
 
 #define LILYGO_T5_V266
 #include <GxEPD.h>
@@ -77,6 +73,8 @@
 GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
 GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
+#define BUTTON_PIN_BITMASK 4294967296 // 2^32 means GPIO32
+
 // These values get replaced with the user provided values by the Web Serial Installer for Lightning Piggy.
 // But you can also replace them manually yourself here if you don't plan on using the Web Installer.
 const char* ssid     = "REPLACETHISBYWIFISSID_REPLACETHISBYWIFISSID_REPLACETHISBYWIFISSID"; // wifi SSID here
@@ -97,13 +95,23 @@ int qrSideSize;
 void setup()
 {
     Serial.begin(115200);
-    Serial.println("Lightning Piggy version 1.1.4 starting up");
+    Serial.println("Lightning Piggy version 1.2.0 starting up");
 
     // turn on the green LED-IO12 on the PCB
     // otherwise there's no indication that the board is on when it's running on battery power
     // it will turn off when the board hibernates
     pinMode(12, OUTPUT);
     digitalWrite(12, HIGH);   // turn the LED on (HIGH is the voltage level)
+
+    Serial.println("CPU0 reset reason:");
+    print_reset_reason(rtc_get_reset_reason(0));
+    verbose_print_reset_reason(rtc_get_reset_reason(0));
+
+    Serial.println("CPU1 reset reason:");
+    print_reset_reason(rtc_get_reset_reason(1));
+    verbose_print_reset_reason(rtc_get_reset_reason(1));
+
+    print_wakeup_reason();
 
     // read and print battery level
     int batteryLevel = analogRead(35);
@@ -193,6 +201,82 @@ void loop() {
     getLNURLPayments(3);
     display.update();
     hibernate(6 * 60 * 60);
+}
+
+void print_reset_reason(int reason)
+{
+  switch ( reason)
+  {
+    case 1 : Serial.println ("POWERON_RESET");break;          /**<1,  Vbat power on reset*/
+    case 3 : Serial.println ("SW_RESET");break;               /**<3,  Software reset digital core*/
+    case 4 : Serial.println ("OWDT_RESET");break;             /**<4,  Legacy watch dog reset digital core*/
+    case 5 : Serial.println ("DEEPSLEEP_RESET");break;        /**<5,  Deep Sleep reset digital core*/
+    case 6 : Serial.println ("SDIO_RESET");break;             /**<6,  Reset by SLC module, reset digital core*/
+    case 7 : Serial.println ("TG0WDT_SYS_RESET");break;       /**<7,  Timer Group0 Watch dog reset digital core*/
+    case 8 : Serial.println ("TG1WDT_SYS_RESET");break;       /**<8,  Timer Group1 Watch dog reset digital core*/
+    case 9 : Serial.println ("RTCWDT_SYS_RESET");break;       /**<9,  RTC Watch dog Reset digital core*/
+    case 10 : Serial.println ("INTRUSION_RESET");break;       /**<10, Instrusion tested to reset CPU*/
+    case 11 : Serial.println ("TGWDT_CPU_RESET");break;       /**<11, Time Group reset CPU*/
+    case 12 : Serial.println ("SW_CPU_RESET");break;          /**<12, Software reset CPU*/
+    case 13 : Serial.println ("RTCWDT_CPU_RESET");break;      /**<13, RTC Watch dog Reset CPU*/
+    case 14 : Serial.println ("EXT_CPU_RESET");break;         /**<14, for APP CPU, reseted by PRO CPU*/
+    case 15 : Serial.println ("RTCWDT_BROWN_OUT_RESET");break;/**<15, Reset when the vdd voltage is not stable*/
+    case 16 : Serial.println ("RTCWDT_RTC_RESET");break;      /**<16, RTC Watch dog reset digital core and rtc module*/
+    default : Serial.println ("NO_MEAN");
+  }
+}
+
+void verbose_print_reset_reason(int reason)
+{
+  switch ( reason)
+  {
+    case 1  : Serial.println ("Vbat power on reset");break;
+    case 3  : Serial.println ("Software reset digital core");break;
+    case 4  : Serial.println ("Legacy watch dog reset digital core");break;
+    case 5  : Serial.println ("Deep Sleep reset digital core");break;
+    case 6  : Serial.println ("Reset by SLC module, reset digital core");break;
+    case 7  : Serial.println ("Timer Group0 Watch dog reset digital core");break;
+    case 8  : Serial.println ("Timer Group1 Watch dog reset digital core");break;
+    case 9  : Serial.println ("RTC Watch dog Reset digital core");break;
+    case 10 : Serial.println ("Instrusion tested to reset CPU");break;
+    case 11 : Serial.println ("Time Group reset CPU");break;
+    case 12 : Serial.println ("Software reset CPU");break;
+    case 13 : Serial.println ("RTC Watch dog Reset CPU");break;
+    case 14 : Serial.println ("for APP CPU, reseted by PRO CPU");break;
+    case 15 : Serial.println ("Reset when the vdd voltage is not stable");break;
+    case 16 : Serial.println ("RTC Watch dog reset digital core and rtc module");break;
+    default : Serial.println ("NO_MEAN");
+  }
+}
+
+
+/*
+Method to print the reason by which ESP32
+has been awaken from sleep
+*/
+void print_wakeup_reason(){
+  esp_sleep_wakeup_cause_t wakeup_reason;
+
+  wakeup_reason = esp_sleep_get_wakeup_cause();
+
+  switch(wakeup_reason)
+  {
+    case ESP_SLEEP_WAKEUP_EXT0 : Serial.println("Wakeup caused by external signal using EXT0 RTC_IO"); break;
+    case ESP_SLEEP_WAKEUP_EXT1 : Serial.println("Wakeup caused by external signal using EXT1 RTC_CNTL"); print_GPIO_wake_up(); break;
+    case ESP_SLEEP_WAKEUP_TIMER : Serial.println("Wakeup caused by timer"); break;
+    case ESP_SLEEP_WAKEUP_TOUCHPAD : Serial.println("Wakeup caused by touchpad"); break;
+    case ESP_SLEEP_WAKEUP_ULP : Serial.println("Wakeup caused by ULP program"); break;
+    default : Serial.printf("Wakeup was not caused by deep sleep, wakeup reason: %d\n",wakeup_reason); break;
+  }
+}
+
+/*
+Method to print the GPIO that triggered the wakeup
+*/
+void print_GPIO_wake_up(){
+  uint64_t GPIO_reason = esp_sleep_get_ext1_wakeup_status();
+  Serial.print("GPIO that triggered the wake up: GPIO ");
+  Serial.println((log(GPIO_reason))/log(2), 0);
 }
 
 int displayHeight() {
@@ -505,11 +589,22 @@ void hibernate(int sleepTimeSeconds) {
   uint64_t deepSleepTime = (uint64_t)sleepTimeSeconds * (uint64_t)1000 * (uint64_t)1000;
   Serial.println("Going to sleep for seconds");
   Serial.println(sleepTimeSeconds);
-  esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH,   ESP_PD_OPTION_OFF);
+  esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON); // RTC peripherals needs to stay on for GPIO32's pulldown to work
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
   esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL,         ESP_PD_OPTION_OFF);
   esp_sleep_enable_timer_wakeup(deepSleepTime);
+
+  // Enable GPIO39 (user button) wakeup
+  // GPIO39 is active low, which ext1 doesn't support so we need ext0:
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_39,0); //1 = High, 0 = Low
+
+  // Enable GPIO32 (vibration sensor pin wakeup
+  // ext0 only supports a single wakeup pin so we need ext1 for an additional one:
+  rtc_gpio_pullup_dis(GPIO_NUM_32);  // pullup disabled because pulldown enabled
+  rtc_gpio_pulldown_en(GPIO_NUM_32); // pulldown is needed to avoid floating pin that triggers randomly
+  esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK,ESP_EXT1_WAKEUP_ANY_HIGH);
+
   esp_deep_sleep_start();
 }
 
