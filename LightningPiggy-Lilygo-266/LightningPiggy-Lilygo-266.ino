@@ -113,10 +113,6 @@ void setup()
 
     print_wakeup_reason();
 
-    // read and print battery level
-    int batteryLevel = analogRead(35);
-    Serial.println("Got battery level: " + String(batteryLevel));
-
     SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);
     display.init();
 
@@ -124,14 +120,23 @@ void setup()
     // this needs to be done before setRotation, otherwise still faint/missing pixels, even with using_rotation = true
     display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false);
 
-    // first erase entire display, otherwise old stuff might still be (faintly) there
-    display.fillScreen(GxEPD_WHITE);
-
-    // rotate 90 degrees
-    display.setRotation(1);
+    display.fillScreen(GxEPD_WHITE); // erase entire display, otherwise old stuff might still be (faintly) there
+    display.setTextColor(GxEPD_BLACK);
+    display.setRotation(1); // display is used in landscape mode
 
     // display a border to simulate the new low resolution display
     displayBorder();
+
+    // show warning if battery voltage is low
+    double batteryVoltage = getBatteryVoltage();
+    Serial.println("Battery voltage: " + String(batteryVoltage));
+    if (batteryVoltage < 3.8) { // 3.7 is minimum but show warning a bit before
+            String lowBatteryString = "Low battery (" + String(batteryVoltage) + " Volts)";
+            const char *batteryChar = lowBatteryString.c_str();
+            printTextCentered((char*)batteryChar);
+            delay(5000);
+    }
+
     display.update();
 
     // piggy logo to show the board is started
@@ -187,7 +192,6 @@ void loop() {
     getWalletDetails();
 
     display.fillScreen(GxEPD_WHITE);
-    display.setTextColor(GxEPD_BLACK);
 
     displayVoltage();
     displayBorder();
@@ -305,38 +309,6 @@ void verticalLine() {
     for (int16_t y = 0; y<displayHeight(); y++) {
       display.drawPixel(displayWidth()+1,y,0);
     }
-}
-
-void displayVoltage() {
-    // read and print battery level
-    int totalLevel = 0;
-    Serial.println("before reading...");
-    for (int multiread=0; multiread<10; multiread++) {
-      Serial.println("read " + String(multiread));
-      totalLevel += analogRead(35);
-      delay(100);
-      Serial.println("after read " + String(multiread));
-    }
-
-    totalLevel = totalLevel / 10;
-    double voltage = (totalLevel * 1.72) / 1000;
-
-    Serial.println("Got battery level avg 10: " + String(totalLevel));
-    Serial.println("calibrated voltage: " + String(voltage));
-
-    //String batteryString(totalLevel);
-    String voltageString(voltage);
-    voltageString += "V";
-    //const char *batteryChar = batteryString.c_str();
-    const char *voltageChar = voltageString.c_str();
-    display.setFont(&Lato_Medium_12);
-    //display.setCursor(104,20);
-    //display.print((char*)batteryChar);
-    int16_t x1, y1;
-    uint16_t w, h;
-    display.getTextBounds((char*)voltageChar, 0, 0, &x1, &y1, &w, &h);
-    display.setCursor(displayWidth()-w,104);
-    display.print((char*)voltageChar);
 }
 
 void printBalance() {
