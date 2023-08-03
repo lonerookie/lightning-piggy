@@ -471,9 +471,8 @@ String getEndpointData(String endpointUrl) {
   {
     Serial.println("Server down");
      display.setFont(&Lato_Medium_18);
-    printTextCentered("Oink. I couldn't talk to the Internet :(");
+    printTextCentered((char*)String("I couldn't talk to the Internet :(").c_str());
     hibernate(30 * 60);
-    delay(3000);
   }
 
   const String request = String("GET ") + endpointUrl + " HTTP/1.1\r\n" +
