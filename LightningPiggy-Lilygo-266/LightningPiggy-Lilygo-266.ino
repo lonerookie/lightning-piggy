@@ -127,17 +127,13 @@ void setup()
     // display a border to simulate the new low resolution display
     displayBorder();
 
-    // show warning if battery voltage is low
-    double batteryVoltage = getBatteryVoltage();
-    Serial.println("Battery voltage: " + String(batteryVoltage));
-    if (batteryVoltage < 3.8) { // 3.7 is minimum but show warning a bit before
-            String lowBatteryString = "Low battery (" + String(batteryVoltage) + " Volts)";
-            const char *batteryChar = lowBatteryString.c_str();
-            printTextCentered((char*)batteryChar);
-            delay(5000);
+    // update display (with delay if battery low warning)
+    if (checkShowLowBattery()) {
+      display.update();
+      delay(5000);
+    } else {
+      display.update();
     }
-
-    display.update();
 
     // piggy logo to show the board is started
     display.drawBitmap(piggyLogo, 0, 0, 104, 104, GxEPD_WHITE);
@@ -193,7 +189,7 @@ void loop() {
 
     display.fillScreen(GxEPD_WHITE);
 
-    displayVoltage();
+    displayVoltageAndLowBatteryWarning();
     displayBorder();
     printBalance();
     display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false); // seems needed to avoid artifacts later on when doing partial draws
@@ -201,9 +197,9 @@ void loop() {
 
     getLNURLp();
     showLNURLpQR();
-
     getLNURLPayments(3);
     display.update();
+
     hibernate(6 * 60 * 60);
 }
 
