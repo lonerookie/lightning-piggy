@@ -56,6 +56,7 @@
 #include <boards.h>
 #include "qrcoded.h"
 #include "logos.h"
+#include "config.h"
 
 #include <WiFiClientSecure.h>
 
@@ -74,13 +75,6 @@ GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
 GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
 #define BUTTON_PIN_BITMASK 4294967296 // 2^32 means GPIO32
-
-// These values get replaced with the user provided values by the Web Serial Installer for Lightning Piggy.
-// But you can also replace them manually yourself here if you don't plan on using the Web Installer.
-const char* ssid     = "REPLACETHISBYWIFISSID_REPLACETHISBYWIFISSID_REPLACETHISBYWIFISSID"; // wifi SSID here
-const char* password = "REPLACETHISBYWIFIKEY_REPLACETHISBYWIFIKEY_REPLACETHISBYWIFIKEY"; // wifi password here
-const char* host = "REPLACETHISBYLNBITSHOST_REPLACETHISBYLNBITSHOST_REPLACETHISBYLNBITSHOST"; // HOST NAME HERE E.G. legend.lnbits.com
-const char* invoiceKey = "REPLACETHISBYLNBITSKEY_REPLACETHISBYLNBITSKEY_REPLACETHISBYLNBITSKEY"; // lnbits wallet invoice hey here
 
 String walletBalanceText = "";
 String paymentDetails = "";
