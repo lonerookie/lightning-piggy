@@ -1,4 +1,17 @@
 
+// Global variables for display
+GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
+GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
+
+
+void setup_display() {
+    SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);
+    getDisplay().init();
+}
+
+GxEPD_Class getDisplay() {
+  return display;
+}
 
 int displayHeight() {
   // lilygo 2.66: 152
