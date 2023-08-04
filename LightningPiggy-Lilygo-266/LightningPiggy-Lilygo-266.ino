@@ -75,8 +75,6 @@ GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
 #define BUTTON_PIN_BITMASK 4294967296 // 2^32 means GPIO32
 
-int qrSideSize;
-
 void setup()
 {
     Serial.begin(115200);

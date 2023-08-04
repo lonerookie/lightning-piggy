@@ -15,7 +15,7 @@ void showLNURLpQR(String qrData) {
   qrcode_initText(&qrcoded, qrcodeData, qrVersion, 0, qrDataChar);
 
   Serial.println("Displaying LNURLp QR code...");
-  qrSideSize = pixSize * qrcoded.size;
+  int qrSideSize = pixSize * qrcoded.size;
   int qrPosX = displayWidth() - qrSideSize;
   int qrPosY = 0;
 
