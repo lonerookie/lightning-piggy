@@ -132,56 +132,23 @@ void setup()
     display.drawBitmap(piggyLogo, 0, 0, 104, 104, GxEPD_WHITE);
     display.updateWindow(0, 0, 104, 104, true);
 
-    /*
-    display.setFont(&Lato_Medium_20);
-    String str = "Connecting to WiFi...";
-    int16_t x1, y1, cursor_x, cursor_y, box_x, box_y;
-    uint16_t w, h;
-
-    display.getTextBounds(str, 0, 0, &x1, &y1, &w, &h);
-    cursor_x = displayWidth() / 2 - w / 2;
-    cursor_y = displayHeight() / 2 - h / 2;
-    box_x = cursor_x;
-    box_y = cursor_y - h;
-    //Serial.println(String(box_x) + "," + String(box_y) + "," +String(cursor_x) + "," +String(cursor_y) + "," + String(w) + "," +String(h));
-    display.setCursor(cursor_x, cursor_y);
-    display.print(str);
-    displayBorder();
-    display.updateWindow(box_x,box_y,w,h,true);
-    */
-
     Serial.println("Connecting to " + String(ssid));
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
     }
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
+    Serial.println("WiFi connected, IP address: " + WiFi.localIP());
 
     // bitcoin logo to show wifi is connected
     display.drawBitmap(epd_bitmap_Bitcoin, displayWidth() - 104, 0, 104, 104, GxEPD_WHITE);
     display.updateWindow(displayWidth() - 104, 0, 104, 104, true);
-
-
-    /*
-    str = "Fetching info...";
-    display.fillRect(box_x, box_y, w, h, GxEPD_WHITE);
-    display.setCursor(cursor_x, cursor_y);
-    display.print(str);
-    display.updateWindow(box_x,box_y,w,h,true);
-    Serial.println("Fetching info should be visible now...");
-    delay(10000);
-    */
 }
 
 
 void loop() {
-    getWalletDetails();
-
     display.fillScreen(GxEPD_WHITE);
-
+    getWalletDetails();
     displayVoltageAndLowBatteryWarning();
     displayBorder();
     printBalance();
@@ -201,7 +168,7 @@ void printBalance() {
     uint16_t w, h;
     display.setFont(&Lato_Medium_26);
     display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &walletBalanceTextHeight);
-    Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(walletBalanceTextHeight)); // typical value for Lato_Medium_26: 1,-19,118,20
+    //Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(walletBalanceTextHeight)); // typical value for Lato_Medium_26: 1,-19,118,20
     display.setCursor(1, walletBalanceTextHeight);
     display.print(walletBalanceText);
 }
