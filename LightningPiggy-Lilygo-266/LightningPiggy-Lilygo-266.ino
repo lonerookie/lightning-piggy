@@ -75,8 +75,6 @@ GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
 #define BUTTON_PIN_BITMASK 4294967296 // 2^32 means GPIO32
 
-String paymentDetails = "";
-
 String qrData;
 uint8_t *framebuffer;
 
