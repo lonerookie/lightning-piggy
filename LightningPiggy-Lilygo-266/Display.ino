@@ -6,7 +6,7 @@ GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
 void setup_display() {
     SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);
-    getDisplay().init();
+    display.init();
 
     // partial update to full screen to preset for partial update of box window (this avoids strange background effects)
     // this needs to be done before setRotation, otherwise still faint/missing pixels, even with using_rotation = true
