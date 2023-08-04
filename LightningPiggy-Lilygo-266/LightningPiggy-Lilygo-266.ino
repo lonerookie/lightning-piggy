@@ -196,22 +196,14 @@ void loop() {
     hibernate(6 * 60 * 60);
 }
 
-
-
 void printBalance() {
-  Serial.println("Displaying balance...");
-  int16_t x1, y1;
+    int16_t x1, y1;
     uint16_t w, h;
     display.setFont(&Lato_Medium_26);
     display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &walletBalanceTextHeight);
     Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(walletBalanceTextHeight)); // typical value for Lato_Medium_26: 1,-19,118,20
     display.setCursor(1, walletBalanceTextHeight);
     display.print(walletBalanceText);
-    /* add battery level for testing:
-    int batteryLevel = analogRead(35);
-    Serial.println("Got battery level: " + String(batteryLevel));
-    display.print(walletBalanceText + " B:" + String(batteryLevel));
-    */
 }
 
 
