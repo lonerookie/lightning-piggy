@@ -13,8 +13,7 @@ void print_reset_reasons() {
     verbose_print_reset_reason(rtc_get_reset_reason(1));
 }
 
-void print_reset_reason(int reason)
-{
+void print_reset_reason(int reason) {
   switch ( reason)
   {
     case 1 : Serial.println ("POWERON_RESET");break;          /**<1,  Vbat power on reset, after flashing firmware or pushing reset button */
@@ -36,8 +35,7 @@ void print_reset_reason(int reason)
   }
 }
 
-void verbose_print_reset_reason(int reason)
-{
+void verbose_print_reset_reason(int reason) {
   switch ( reason)
   {
     case 1  : Serial.println ("Vbat power on reset");break;

@@ -57,8 +57,7 @@
 #include "Fonts/LatoMedium20pt.h"
 #include "Fonts/LatoMedium26pt.h"
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
     Serial.println("Lightning Piggy version 1.2.0 starting up");
 
