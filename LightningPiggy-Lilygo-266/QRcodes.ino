@@ -1,3 +1,5 @@
+#include "qrcoded.h"
+
 void showLNURLpQR(String qrData) {
   if (qrData == "null") {
     Serial.println("INFO: not showing LNURLp QR code because no LNURLp code was found.");

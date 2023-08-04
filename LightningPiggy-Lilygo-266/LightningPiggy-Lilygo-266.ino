@@ -36,13 +36,11 @@
 // TODO:
 // - metrics
 
-#include <ArduinoJson.h>
 #include <WiFiClientSecure.h>
 
 #define LILYGO_T5_V266
 #include <boards.h>
 
-#include "qrcoded.h"
 #include "logos.h"
 #include "config.h"
 

@@ -1,3 +1,5 @@
+#include <ArduinoJson.h>
+
 int getWalletBalance() {
   Serial.println("Getting wallet details...");
   const String url = "/api/v1/wallet";
