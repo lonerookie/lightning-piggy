@@ -1,4 +1,4 @@
-void getWalletDetails() {
+int getWalletBalance() {
   Serial.println("Getting wallet details...");
   const String url = "/api/v1/wallet";
   const String line = getEndpointData(url);
@@ -17,12 +17,13 @@ void getWalletDetails() {
     Serial.println("ERROR: could not find wallet details on lnbits host " + String(host) + " with invoice/read key " + String(invoiceKey) + " so something's wrong! Did you make a typo?");
   }
 
-  walletBalance = doc["balance"];
+  int walletBalance = doc["balance"];
   walletBalance = walletBalance / 1000;
 
   Serial.println(walletName);
   Serial.println(String(walletBalance) + " sats");
-  walletBalanceText = String(walletBalance) + " sats";
+
+  return walletBalance;
 }
 
 /**

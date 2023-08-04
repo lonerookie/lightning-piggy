@@ -75,13 +75,11 @@ GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
 #define BUTTON_PIN_BITMASK 4294967296 // 2^32 means GPIO32
 
-String walletBalanceText = "";
 String paymentDetails = "";
 
 String qrData;
 uint8_t *framebuffer;
 
-int walletBalance = 0;
 uint16_t walletBalanceTextHeight;
 int qrSideSize;
 
@@ -140,10 +138,10 @@ void setup()
 
 void loop() {
     display.fillScreen(GxEPD_WHITE);
-    getWalletDetails();
+    int balance = getWalletBalance();
     displayVoltageAndLowBatteryWarning();
     displayBorder();
-    printBalance();
+    printBalance(balance);
     display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false); // seems needed to avoid artifacts later on when doing partial draws
     display.update();
 
@@ -153,14 +151,4 @@ void loop() {
     display.update();
 
     hibernate(6 * 60 * 60);
-}
-
-void printBalance() {
-    int16_t x1, y1;
-    uint16_t w, h;
-    display.setFont(&Lato_Medium_26);
-    display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &walletBalanceTextHeight);
-    //Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(walletBalanceTextHeight)); // typical value for Lato_Medium_26: 1,-19,118,20
-    display.setCursor(1, walletBalanceTextHeight);
-    display.print(walletBalanceText);
 }

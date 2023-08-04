@@ -26,6 +26,17 @@ void verticalLine() {
     }
 }
 
+void printBalance(int balance) {
+    String walletBalanceText = String(balance) + " sats";
+
+    int16_t x1, y1;
+    uint16_t w, h;
+    display.setFont(&Lato_Medium_26);
+    display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &walletBalanceTextHeight);
+    //Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(walletBalanceTextHeight)); // typical value for Lato_Medium_26: 1,-19,118,20
+    display.setCursor(1, walletBalanceTextHeight);
+    display.print(walletBalanceText);
+}
 
 void printTextCentered(char* str) {
     int16_t x1, y1;
