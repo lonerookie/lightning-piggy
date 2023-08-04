@@ -33,12 +33,6 @@
 // - set "Webhook URL" to https://www.lightningpiggy.com/paymentreceived
 // - set a "Success message", like: Thanks for sending sats to my piggy
 //
-// Wakeup reasons:
-// - rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT): after flashing firmware or pushing the reset button
-// - rst:0x5 (DEEPSLEEP_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT): after wakeup from hibernate
-// - rst:0x10 (RTCWDT_RTC_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT): using the sliding switch
-// - watchdog reset
-
 // TODO:
 // - metrics
 

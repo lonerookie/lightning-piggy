@@ -12,10 +12,10 @@ void print_reset_reason(int reason)
 {
   switch ( reason)
   {
-    case 1 : Serial.println ("POWERON_RESET");break;          /**<1,  Vbat power on reset*/
+    case 1 : Serial.println ("POWERON_RESET");break;          /**<1,  Vbat power on reset, after flashing firmware or pushing reset button */
     case 3 : Serial.println ("SW_RESET");break;               /**<3,  Software reset digital core*/
     case 4 : Serial.println ("OWDT_RESET");break;             /**<4,  Legacy watch dog reset digital core*/
-    case 5 : Serial.println ("DEEPSLEEP_RESET");break;        /**<5,  Deep Sleep reset digital core*/
+    case 5 : Serial.println ("DEEPSLEEP_RESET");break;        /**<5,  Deep Sleep reset digital core, after wakeup from hibernate */
     case 6 : Serial.println ("SDIO_RESET");break;             /**<6,  Reset by SLC module, reset digital core*/
     case 7 : Serial.println ("TG0WDT_SYS_RESET");break;       /**<7,  Timer Group0 Watch dog reset digital core*/
     case 8 : Serial.println ("TG1WDT_SYS_RESET");break;       /**<8,  Timer Group1 Watch dog reset digital core*/
@@ -26,7 +26,7 @@ void print_reset_reason(int reason)
     case 13 : Serial.println ("RTCWDT_CPU_RESET");break;      /**<13, RTC Watch dog Reset CPU*/
     case 14 : Serial.println ("EXT_CPU_RESET");break;         /**<14, for APP CPU, reseted by PRO CPU*/
     case 15 : Serial.println ("RTCWDT_BROWN_OUT_RESET");break;/**<15, Reset when the vdd voltage is not stable*/
-    case 16 : Serial.println ("RTCWDT_RTC_RESET");break;      /**<16, RTC Watch dog reset digital core and rtc module*/
+    case 16 : Serial.println ("RTCWDT_RTC_RESET");break;      /**<16, RTC Watch dog reset digital core and rtc module, after sliding switch off-on */
     default : Serial.println ("NO_MEAN");
   }
 }
@@ -107,4 +107,3 @@ void hibernate(int sleepTimeSeconds) {
 
   esp_deep_sleep_start();
 }
-
