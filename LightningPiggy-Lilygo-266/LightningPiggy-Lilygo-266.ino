@@ -113,12 +113,10 @@ void setup()
 
 
 void loop() {
-    int balance = getWalletBalance();
-
     whiteDisplay();
+
     displayVoltageAndLowBatteryWarning();
-    displayBorder();
-    printBalance(balance);
+    printBalance(getWalletBalance());
     getDisplay().update();
 
     String lnurlp = getLNURLp();
