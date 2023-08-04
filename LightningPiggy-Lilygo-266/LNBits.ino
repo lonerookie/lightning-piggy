@@ -143,7 +143,7 @@ String getEndpointData(String endpointUrl) {
   {
     Serial.println("Server down");
      getDisplay().setFont(&Lato_Medium_18);
-    printTextCentered((char*)String("I couldn't talk to the Internet :(").c_str());
+    printTextCentered((char*)String("No internet :-(").c_str());
     hibernate(30 * 60);
   }
 
