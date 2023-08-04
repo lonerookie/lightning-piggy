@@ -43,37 +43,38 @@
 // - metrics
 
 #include <ArduinoJson.h>
+#include <WiFiClientSecure.h>
 
 // for rtc_gpio_pullup_dis and rtc_gpio_pulldown_en
 #include "driver/rtc_io.h"
 // for rtc_get_reset_reason
 #include <rom/rtc.h>
 
-
 #define LILYGO_T5_V266
-#include <GxEPD.h>
 #include <boards.h>
+
 #include "qrcoded.h"
 #include "logos.h"
 #include "config.h"
 
-#include <WiFiClientSecure.h>
-
+// Display stuff:
+#include <GxEPD.h>
 #include <GxDEPG0266BN/GxDEPG0266BN.h>    // 2.66" b/w   form DKE GROUP
+#include <GxIO/GxIO_SPI/GxIO_SPI.h>
+#include <GxIO/GxIO.h>
 
+// Fonts after display:
 #include "Fonts/LatoMedium8pt.h"
 #include "Fonts/LatoMedium12pt.h"
 #include "Fonts/LatoMedium18pt.h"
 #include "Fonts/LatoMedium20pt.h"
 #include "Fonts/LatoMedium26pt.h"
 
-#include <GxIO/GxIO_SPI/GxIO_SPI.h>
-#include <GxIO/GxIO.h>
+#define BUTTON_PIN_BITMASK 4294967296 // 2^32 means GPIO32
 
+// Global variables for display
 GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
 GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
-
-#define BUTTON_PIN_BITMASK 4294967296 // 2^32 means GPIO32
 
 void setup()
 {
