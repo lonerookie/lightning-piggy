@@ -32,9 +32,9 @@ void printBalance(int balance) {
     int16_t x1, y1;
     uint16_t w, h;
     display.setFont(&Lato_Medium_26);
-    display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &walletBalanceTextHeight);
+    display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &h);
     //Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(walletBalanceTextHeight)); // typical value for Lato_Medium_26: 1,-19,118,20
-    display.setCursor(1, walletBalanceTextHeight);
+    display.setCursor(1, h);
     display.print(walletBalanceText);
 }
 
