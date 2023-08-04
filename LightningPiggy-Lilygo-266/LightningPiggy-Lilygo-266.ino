@@ -84,17 +84,7 @@ void setup()
     print_wakeup_reason();
 
     setup_display();
-
-    // partial update to full screen to preset for partial update of box window (this avoids strange background effects)
-    // this needs to be done before setRotation, otherwise still faint/missing pixels, even with using_rotation = true
-    getDisplay().updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false);
-
-    getDisplay().fillScreen(GxEPD_WHITE); // erase entire display, otherwise old stuff might still be (faintly) there
-    getDisplay().setTextColor(GxEPD_BLACK);
-    getDisplay().setRotation(1); // display is used in landscape mode
-
-    // display a border to simulate the new low resolution display
-    displayBorder();
+    whiteDisplay();
 
     // update display (with delay if battery low warning)
     if (checkShowLowBattery()) {
@@ -123,12 +113,12 @@ void setup()
 
 
 void loop() {
-    getDisplay().fillScreen(GxEPD_WHITE);
     int balance = getWalletBalance();
+
+    whiteDisplay();
     displayVoltageAndLowBatteryWarning();
     displayBorder();
     printBalance(balance);
-    getDisplay().updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false); // seems needed to avoid artifacts later on when doing partial draws
     getDisplay().update();
 
     String lnurlp = getLNURLp();
