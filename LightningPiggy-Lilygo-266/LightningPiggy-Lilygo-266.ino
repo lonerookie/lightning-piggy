@@ -90,20 +90,12 @@ void setup()
     Serial.begin(115200);
     Serial.println("Lightning Piggy version 1.2.0 starting up");
 
-    // turn on the green LED-IO12 on the PCB
-    // otherwise there's no indication that the board is on when it's running on battery power
+    // turn on the green LED-IO12 on the PCB, to show the board is on
     // it will turn off when the board hibernates
     pinMode(12, OUTPUT);
     digitalWrite(12, HIGH);   // turn the LED on (HIGH is the voltage level)
 
-    Serial.println("CPU0 reset reason:");
-    print_reset_reason(rtc_get_reset_reason(0));
-    verbose_print_reset_reason(rtc_get_reset_reason(0));
-
-    Serial.println("CPU1 reset reason:");
-    print_reset_reason(rtc_get_reset_reason(1));
-    verbose_print_reset_reason(rtc_get_reset_reason(1));
-
+    print_reset_reasons();
     print_wakeup_reason();
 
     SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);

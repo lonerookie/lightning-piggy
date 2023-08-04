@@ -1,3 +1,12 @@
+void print_reset_reasons() {
+    Serial.println("CPU0 reset reason:");
+    print_reset_reason(rtc_get_reset_reason(0));
+    verbose_print_reset_reason(rtc_get_reset_reason(0));
+
+    Serial.println("CPU1 reset reason:");
+    print_reset_reason(rtc_get_reset_reason(1));
+    verbose_print_reset_reason(rtc_get_reset_reason(1));
+}
 
 void print_reset_reason(int reason)
 {
