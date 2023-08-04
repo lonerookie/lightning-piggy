@@ -11,6 +11,7 @@ double getBatteryVoltage() {
     Serial.println("Average battery level: " + String(totalLevel));
 
     double voltage = (totalLevel * 1.72) / 1000;  
+    return voltage;
 }
 
 // Also displays LOW BATTERY warning
@@ -19,7 +20,7 @@ void displayVoltageAndLowBatteryWarning() {
 
     if (voltage < 3.8) {
       display.setFont(&Lato_Medium_20);
-      display.setCursor(10,30);
+      display.setCursor(10,40);
       display.print((char*)String("LOW BATTERY!").c_str());
     }
 
@@ -46,9 +47,9 @@ bool checkShowLowBattery() {
     double batteryVoltage = getBatteryVoltage();
     Serial.println("Battery voltage: " + String(batteryVoltage));
     if (batteryVoltage < 3.8) { // 3.7 is minimum but show warning a bit before
-            String lowBatteryString = "Low battery (" + String(batteryVoltage) + " Volts)";
+            String lowBatteryString = "Low battery (" + String(batteryVoltage) + " V)";
             const char *batteryChar = lowBatteryString.c_str();
-            display.setFont(&Lato_Medium_20);
+            display.setFont(&Lato_Medium_18);
             printTextCentered((char*)batteryChar);
             return true;
     } else {
