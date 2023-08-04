@@ -88,7 +88,7 @@ void setup()
       getDisplay().update();
     }
 
-    // piggy logo to show the board is started
+    // piggy logo indicates board is starting
     getDisplay().drawBitmap(piggyLogo, 0, 0, 104, 104, GxEPD_WHITE);
     getDisplay().updateWindow(0, 0, 104, 104, true);
 
@@ -100,7 +100,7 @@ void setup()
     }
     Serial.println("WiFi connected, IP address: " + WiFi.localIP());
 
-    // bitcoin logo to show wifi is connected
+    // bitcoin logo indicates wifi is connected
     getDisplay().drawBitmap(epd_bitmap_Bitcoin, displayWidth() - 104, 0, 104, 104, GxEPD_WHITE);
     getDisplay().updateWindow(displayWidth() - 104, 0, 104, 104, true);
 }
