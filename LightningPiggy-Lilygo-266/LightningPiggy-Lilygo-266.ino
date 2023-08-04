@@ -75,7 +75,6 @@ GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
 #define BUTTON_PIN_BITMASK 4294967296 // 2^32 means GPIO32
 
-String qrData;
 uint8_t *framebuffer;
 
 uint16_t walletBalanceTextHeight;
@@ -143,8 +142,14 @@ void loop() {
     display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false); // seems needed to avoid artifacts later on when doing partial draws
     display.update();
 
-    getLNURLp();
-    showLNURLpQR();
+    String lnurlp = getLNURLp();
+    if (lnurlp == "null") {
+      Serial.println("Warning, could not find lnurlp link for this wallet, did you create one?");
+      Serial.println("You can do so by activating the LNURLp extension in LNBits, clicking on the extension, and clicking 'NEW PAY LINK'");
+      Serial.println("You probably don't want to go for 'fixed amount', but rather for any amount.");
+    } else {
+        showLNURLpQR(lnurlp);
+    }
     getLNURLPayments(3);
     display.update();
 

@@ -97,8 +97,10 @@ void getLNURLPayments(int limit) {
 /**
  * @brief Get the first available LNURLp from the wallet
  *
+ * @return lnurlp for accepting payments
+ *
  */
-void getLNURLp() {
+String getLNURLp() {
   Serial.println("Getting LNURLp link list...");
   // Get the first lnurlp
   String lnurlpData = getEndpointData("/lnurlp/api/v1/links");
@@ -122,13 +124,8 @@ void getLNURLp() {
     Serial.println(error.f_str());
   }
   String lnurlp = firstlink["lnurl"];
-  qrData = lnurlp;
   Serial.println(lnurlp);
-  if (lnurlp == "null") {
-    Serial.println("Warning, could not find lnurlp link for this wallet, did you create one?");
-    Serial.println("You can do so by activating the LNURLp extension in LNBits, clicking on the extension, and clicking 'NEW PAY LINK'");
-    Serial.println("You probably don't want to go for 'fixed amount', but rather for any amount.");
-  }
+  return lnurlp;
 }
 
 /**

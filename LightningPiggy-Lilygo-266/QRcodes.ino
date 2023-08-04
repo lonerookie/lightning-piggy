@@ -1,4 +1,4 @@
-void showLNURLpQR() {
+void showLNURLpQR(String qrData) {
   if (qrData == "null") {
     Serial.println("INFO: not showing LNURLp QR code because no LNURLp code was found.");
     return;
@@ -8,7 +8,7 @@ void showLNURLpQR() {
   const char *qrDataChar = qrData.c_str();
   QRCode qrcoded;
 
-  int qrVersion = getQrCodeVersion();
+  int qrVersion = getQrCodeVersion(qrData);
   int pixSize = getQrCodePixelSize(qrVersion);
   uint8_t qrcodeData[qrcode_getBufferSize(qrVersion)];
   
@@ -39,7 +39,7 @@ void showLNURLpQR() {
  * @param qrData 
  * @return int 
  */
-int getQrCodeVersion() {
+int getQrCodeVersion(String qrData) {
   int qrVersion = 0;
   int stringLength = qrData.length();
 
