@@ -39,9 +39,6 @@
 #include <ArduinoJson.h>
 #include <WiFiClientSecure.h>
 
-#include "driver/rtc_io.h"  // for rtc_gpio_pullup_dis and rtc_gpio_pulldown_en
-#include <rom/rtc.h>        // for rtc_get_reset_reason
-
 #define LILYGO_T5_V266
 #include <boards.h>
 
@@ -61,8 +58,6 @@
 #include "Fonts/LatoMedium18pt.h"
 #include "Fonts/LatoMedium20pt.h"
 #include "Fonts/LatoMedium26pt.h"
-
-#define BUTTON_PIN_BITMASK 4294967296 // 2^32 means GPIO32
 
 void setup()
 {

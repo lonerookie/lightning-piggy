@@ -1,3 +1,8 @@
+#include "driver/rtc_io.h"  // for rtc_gpio_pullup_dis and rtc_gpio_pulldown_en
+#include <rom/rtc.h>        // for rtc_get_reset_reason
+
+#define BUTTON_PIN_BITMASK 4294967296 // 2^32 means GPIO32
+
 void print_reset_reasons() {
     Serial.println("CPU0 reset reason:");
     print_reset_reason(rtc_get_reset_reason(0));
