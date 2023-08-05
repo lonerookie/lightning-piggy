@@ -63,7 +63,7 @@ GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("Lightning Piggy version 1.2.0 starting up");
+    Serial.println("Lightning Piggy version 1.3.0 starting up");
 
     // turn on the green LED-IO12 on the PCB, to show the board is on
     // it will turn off when the board hibernates
@@ -94,7 +94,8 @@ void setup() {
         delay(500);
         Serial.print(".");
     }
-    Serial.println("WiFi connected, IP address: " + WiFi.localIP());
+    Serial.print("WiFi connected! IP address: ");
+    Serial.println(WiFi.localIP());
 
     // bitcoin logo indicates wifi is connected
     display.drawBitmap(epd_bitmap_Bitcoin, displayWidth() - 104, 0, 104, 104, GxEPD_WHITE);
