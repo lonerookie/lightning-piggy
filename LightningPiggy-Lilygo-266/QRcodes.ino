@@ -27,11 +27,11 @@ void showLNURLpQR(String qrData) {
     {
       if (qrcode_getModule(&qrcoded, x, y))
       {
-        getDisplay().fillRect(qrPosX + pixSize * x, qrPosY + pixSize * y, pixSize, pixSize, GxEPD_BLACK);
+        display.fillRect(qrPosX + pixSize * x, qrPosY + pixSize * y, pixSize, pixSize, GxEPD_BLACK);
       }
     }
   }
-  getDisplay().updateWindow(qrPosX,qrPosY,qrSideSize,qrSideSize,true);
+  display.updateWindow(qrPosX,qrPosY,qrSideSize,qrSideSize,true);
 }
 
 

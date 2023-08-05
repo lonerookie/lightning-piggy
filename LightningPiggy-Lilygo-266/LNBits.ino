@@ -83,11 +83,11 @@ void getLNURLPayments(int limit) {
           Serial.println("getLNURLPayments output for line " + String(line) +" = " + output);
           int16_t x1, y1;
           uint16_t w, h;
-          getDisplay().setFont(&Lato_Medium_12);
+          display.setFont(&Lato_Medium_12);
           Serial.println("setting cursor to " + String(yPos));
-          getDisplay().getTextBounds(output, 0, 0, &x1, &y1, &w, &h);
-          getDisplay().setCursor(0, yPos);
-          getDisplay().print(output);
+          display.getTextBounds(output, 0, 0, &x1, &y1, &w, &h);
+          display.setCursor(0, yPos);
+          display.print(output);
 
           yPos = yPos - h - 1;
         }
@@ -144,7 +144,7 @@ String getEndpointData(String endpointUrl) {
   if (!client.connect(host, 443))
   {
     Serial.println("Server down");
-     getDisplay().setFont(&Lato_Medium_18);
+     display.setFont(&Lato_Medium_18);
     printTextCentered((char*)String("No internet :-(").c_str());
     hibernate(30 * 60);
   }

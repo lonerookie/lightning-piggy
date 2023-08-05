@@ -57,6 +57,10 @@
 #include "Fonts/LatoMedium20pt.h"
 #include "Fonts/LatoMedium26pt.h"
 
+// Global variables for display
+GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
+GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
+
 void setup() {
     Serial.begin(115200);
     Serial.println("Lightning Piggy version 1.2.0 starting up");
@@ -74,15 +78,15 @@ void setup() {
 
     // update display (with delay if battery low warning)
     if (checkShowLowBattery()) {
-      getDisplay().update();
+      display.update();
       delay(5000);
     } else {
-      getDisplay().update();
+      display.update();
     }
 
     // piggy logo indicates board is starting
-    getDisplay().drawBitmap(piggyLogo, 0, 0, 104, 104, GxEPD_WHITE);
-    getDisplay().updateWindow(0, 0, 104, 104, true);
+    display.drawBitmap(piggyLogo, 0, 0, 104, 104, GxEPD_WHITE);
+    display.updateWindow(0, 0, 104, 104, true);
 
     Serial.println("Connecting to " + String(ssid));
     WiFi.begin(ssid, password);
@@ -93,8 +97,8 @@ void setup() {
     Serial.println("WiFi connected, IP address: " + WiFi.localIP());
 
     // bitcoin logo indicates wifi is connected
-    getDisplay().drawBitmap(epd_bitmap_Bitcoin, displayWidth() - 104, 0, 104, 104, GxEPD_WHITE);
-    getDisplay().updateWindow(displayWidth() - 104, 0, 104, 104, true);
+    display.drawBitmap(epd_bitmap_Bitcoin, displayWidth() - 104, 0, 104, 104, GxEPD_WHITE);
+    display.updateWindow(displayWidth() - 104, 0, 104, 104, true);
 }
 
 
@@ -103,7 +107,7 @@ void loop() {
 
     displayVoltageAndLowBatteryWarning();
     printBalance(getWalletBalance());
-    getDisplay().update();
+    display.update();
 
     String lnurlp = getLNURLp();
     if (lnurlp == "null") {
@@ -114,7 +118,7 @@ void loop() {
         showLNURLpQR(lnurlp);
     }
     getLNURLPayments(3);
-    getDisplay().update();
+    display.update();
 
     hibernate(6 * 60 * 60);
 }

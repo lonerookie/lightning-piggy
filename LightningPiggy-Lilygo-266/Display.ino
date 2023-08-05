@@ -1,28 +1,19 @@
 
-// Global variables for display
-GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
-GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
-
-
 void setup_display() {
     SPI.begin(EPD_SCLK, EPD_MISO, EPD_MOSI);
     display.init();
 
     // partial update to full screen to preset for partial update of box window (this avoids strange background effects)
     // this needs to be done before setRotation, otherwise still faint/missing pixels, even with using_rotation = true
-    getDisplay().updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false);
+    display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false);
 
-    getDisplay().setTextColor(GxEPD_BLACK);
-    getDisplay().setRotation(1); // display is used in landscape mode
-}
-
-GxEPD_Class getDisplay() {
-  return display;
+    display.setTextColor(GxEPD_BLACK);
+    display.setRotation(1); // display is used in landscape mode
 }
 
 void whiteDisplay() {
-  getDisplay().fillScreen(GxEPD_WHITE); // erase entire display, otherwise old stuff might still be (faintly) there
-  getDisplay().updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false); // seems needed to avoid artifacts later on when doing partial draws
+  display.fillScreen(GxEPD_WHITE); // erase entire display, otherwise old stuff might still be (faintly) there
+  display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false); // seems needed to avoid artifacts later on when doing partial draws
 
   // temporarily display a border to simulate the new low resolution display
   displayBorder();
