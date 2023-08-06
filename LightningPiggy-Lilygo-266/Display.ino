@@ -20,13 +20,13 @@ void whiteDisplay() {
 }
 
 int displayHeight() {
-  //return 152; // lilygo 2.66
-  return 104; // lilygo 2.13
+  // lilygo 2.66 is 152px, lilygo 2.13 is 104px
+  return GxEPD_WIDTH; // width and height are swapped because display is rotated
 }
 
 int displayWidth() {
-  //return 296; // lilygo 2.66
-  return 212; // lilygo 2.13
+  // lilygo 2.66 is 296px, lilygo 2.13 is 212px
+  return GxEPD_HEIGHT; // width and height are swapped because display is rotated
 }
 
 // size 0 = smallest font (8pt)
@@ -66,13 +66,13 @@ void displayBorder() {
 
 void horizontalLine() {
     // Line for showing end of display
-    for (int16_t x = 0; x<displayWidth(); x++) {
+    for (int16_t x = 0; x<displayWidth()+1; x++) {
       display.drawPixel(x,displayHeight()+1,0);
     }
 }
 void verticalLine() {
     // Line for showing end of display
-    for (int16_t y = 0; y<displayHeight(); y++) {
+    for (int16_t y = 0; y<displayHeight()+1; y++) {
       display.drawPixel(displayWidth()+1,y,0);
     }
 }
