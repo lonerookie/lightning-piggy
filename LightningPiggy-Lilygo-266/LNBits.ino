@@ -35,7 +35,10 @@ int getWalletBalance() {
  */
 void getLNURLPayments(int limit) {
   Serial.println("Getting " + String(limit) + " LNURL payments...");
-  const uint8_t maxPaymentDetailStrLength = 33; // The maximum number of chars that should be displayed for each payment for Lato_Medium_12 in full width on 212 pixels.
+
+  //const uint8_t maxPaymentDetailStrLength = 33; // The maximum number of chars that should be displayed for each payment for Lato_Medium_12 in full width on 212 pixels.
+  const uint8_t maxPaymentDetailStrLength = 26; // Leave some space on the right for other values
+
   const String url = "/api/v1/payments?limit=" + String(limit);
   const String line = getEndpointData(url);
   DynamicJsonDocument doc(limit * 4096); // 4KB per lnurlpayment should be enough
@@ -83,9 +86,10 @@ void getLNURLPayments(int limit) {
           Serial.println("getLNURLPayments output for line " + String(line) +" = " + output);
           int16_t x1, y1;
           uint16_t w, h;
-          display.setFont(&Lato_Medium_12);
+          setFont(1);
           Serial.println("setting cursor to " + String(yPos));
           display.getTextBounds(output, 0, 0, &x1, &y1, &w, &h);
+          //Serial.println("getTextBounds: " + String(x1) + "," + String(y1) + ","+ String(w) + ","+ String(h));
           display.setCursor(0, yPos);
           display.print(output);
 
@@ -144,7 +148,7 @@ String getEndpointData(String endpointUrl) {
   if (!client.connect(host, 443))
   {
     Serial.println("Server down");
-     display.setFont(&Lato_Medium_18);
+    setFont(2);
     printTextCentered((char*)String("No internet :-(").c_str());
     hibernate(30 * 60);
   }

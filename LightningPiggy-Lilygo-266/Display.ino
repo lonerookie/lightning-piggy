@@ -20,13 +20,43 @@ void whiteDisplay() {
 }
 
 int displayHeight() {
-  // lilygo 2.66: 152
+  //return 152; // lilygo 2.66
   return 104; // lilygo 2.13
 }
 
 int displayWidth() {
-  // lilygo 2.66: 296
+  //return 296; // lilygo 2.66
   return 212; // lilygo 2.13
+}
+
+// size 0 = smallest font (8pt)
+// size 1 = 12pt
+// size 2 = 18pt
+// size 3 = 20pt
+// size 4 = 26pt
+void setFont(int fontSize) {
+  // if it's a big display, then scale up the fonts
+  if (displayWidth() > 212) {
+    fontSize++;
+  }
+  Serial.println("Font size adjusted for display size: " + String(fontSize));
+  if (fontSize < 0) {
+    Serial.println("ERROR: font size " + String(fontSize) + " is not supported, setting min size");
+    display.setFont(&Lato_Medium_8);
+  } else if (fontSize == 0) {
+    display.setFont(&Lato_Medium_8);
+  } else if (fontSize == 1) {
+    display.setFont(&Lato_Medium_12);
+  } else if (fontSize == 2) {
+    display.setFont(&Lato_Medium_18);
+  } else if (fontSize == 3) {
+    display.setFont(&Lato_Medium_20);
+  } else if (fontSize == 4) {
+    display.setFont(&Lato_Medium_26);
+  } else {
+    Serial.println("ERROR: font size " + String(fontSize) + " is not supported, setting max size");
+    display.setFont(&Lato_Medium_26);
+  }
 }
 
 void displayBorder() {
@@ -52,7 +82,7 @@ void printBalance(int balance) {
 
     int16_t x1, y1;
     uint16_t w, h;
-    display.setFont(&Lato_Medium_26);
+    setFont(4);
     display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &h);
     //Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(walletBalanceTextHeight)); // typical value for Lato_Medium_26: 1,-19,118,20
     display.setCursor(1, h);

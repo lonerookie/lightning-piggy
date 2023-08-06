@@ -19,7 +19,7 @@ void displayVoltageAndLowBatteryWarning() {
     double voltage = getBatteryVoltage();
 
     if (voltage < 3.8) {
-      display.setFont(&Lato_Medium_20);
+      setFont(3);
       display.setCursor(10,40);
       display.print((char*)String("LOW BATTERY!").c_str());
     }
@@ -27,11 +27,11 @@ void displayVoltageAndLowBatteryWarning() {
     String voltageString(voltage);
     voltageString += "V";
     const char *voltageChar = voltageString.c_str();
-    display.setFont(&Lato_Medium_12);
+    setFont(1);
     int16_t x1, y1;
     uint16_t w, h;
     display.getTextBounds((char*)voltageChar, 0, 0, &x1, &y1, &w, &h);
-    display.setCursor(displayWidth()-w,104);
+    display.setCursor(displayWidth()-w,displayHeight());
     display.print((char*)voltageChar);
 }
 
@@ -43,7 +43,7 @@ bool checkShowLowBattery() {
     if (batteryVoltage < 3.8) { // 3.7 is minimum but show warning a bit before
             String lowBatteryString = "Low battery (" + String(batteryVoltage) + " V)";
             const char *batteryChar = lowBatteryString.c_str();
-            display.setFont(&Lato_Medium_18);
+            setFont(2);
             printTextCentered((char*)batteryChar);
             return true;
     } else {
