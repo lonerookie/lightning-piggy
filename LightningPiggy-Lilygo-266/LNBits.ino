@@ -93,7 +93,7 @@ void getLNURLPayments(int limit) {
           display.setCursor(0, yPos);
           display.print(output);
 
-          yPos = yPos - h - 1;
+          yPos = yPos - h - 2;
         }
       }
     }
