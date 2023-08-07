@@ -30,7 +30,7 @@
 // - set currency to "satoshis"
 // - click "Advanced options"
 // - set "Comment maximum characters" to 128
-// - set "Webhook URL" to https://www.lightningpiggy.com/paymentreceived
+// - set "Webhook URL" to https://p.lightningpiggy.com/
 // - set a "Success message", like: Thanks for sending sats to my piggy
 //
 // TODO:
