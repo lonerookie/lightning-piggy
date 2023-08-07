@@ -85,12 +85,8 @@ void getLNURLPayments(int limit, int maxX, int startY) {
         String paymentDetail(comment);
         String paymentAmount(amount);
         String units = "sats";
-        if (amount < 2) {
-          units = "sat";
-        }
+        if (amount < 2) units = "sat";
         paymentDetail = paymentAmount + " " + units + ": " + paymentDetail;
-        // first cut off max total length
-        paymentDetail = paymentDetail.substring(0, maxPaymentDetailStrLength * maxLinesPerComment);
 
         // first calculate how many lines are needed
         unsigned int linesNeeded = (paymentDetail.length() / maxPaymentDetailStrLength) + 1;
@@ -98,7 +94,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
         linesNeeded = min(maxLinesPerComment, linesNeeded);
         Serial.println("linesNeeded = " + String(linesNeeded));
 
-        // cycle backwards through the lines to show, from the bottom to screen up
+        // cycle through the lines to show
         for (int line=0;line<linesNeeded;line++) {
           output = paymentDetail.substring(line*maxPaymentDetailStrLength, line*maxPaymentDetailStrLength+maxPaymentDetailStrLength);
           Serial.println("getLNURLPayments output for line " + String(line) +" = " + output);
