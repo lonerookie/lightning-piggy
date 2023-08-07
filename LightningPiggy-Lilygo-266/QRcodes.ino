@@ -1,9 +1,12 @@
 #include "qrcoded.h"
 
-void showLNURLpQR(String qrData) {
+/*
+ * returns: x value before QR code
+ */
+int showLNURLpQR(String qrData) {
   if (qrData == "null") {
     Serial.println("INFO: not showing LNURLp QR code because no LNURLp code was found.");
-    return;
+    return displayWidth();
   }
   Serial.println("Building LNURLp QR code...");
 
@@ -32,6 +35,8 @@ void showLNURLpQR(String qrData) {
     }
   }
   display.updateWindow(qrPosX,qrPosY,qrSideSize,qrSideSize,true);
+
+  return qrPosX;
 }
 
 

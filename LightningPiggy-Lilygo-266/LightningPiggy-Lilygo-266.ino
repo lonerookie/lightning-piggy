@@ -39,6 +39,7 @@
 #include <WiFiClientSecure.h>
 
 #define LILYGO_T5_V266
+//#define LILYGO_T5_V213
 #include <boards.h>
 
 #include "logos.h"
@@ -47,6 +48,8 @@
 // Display stuff:
 #include <GxEPD.h>
 #include <GxDEPG0266BN/GxDEPG0266BN.h>    // 2.66" black/white ePaper display by DKE GROUP
+//#include <GxDEPG0213BN/GxDEPG0213BN.h>    // 2.13" black/white ePaper display by DKE GROUP
+//#include <GxGDEM0213B74/GxGDEM0213B74.h>  // 2.13" b/w  form GoodDisplay 4-color
 #include <GxIO/GxIO_SPI/GxIO_SPI.h>
 #include <GxIO/GxIO.h>
 
@@ -56,6 +59,9 @@
 #include "Fonts/LatoMedium18pt.h"
 #include "Fonts/LatoMedium20pt.h"
 #include "Fonts/LatoMedium26pt.h"
+
+// DEBUG causes no wifi connection and only dummy data to be used
+//#define DEBUG
 
 // Global variables for display
 GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
@@ -88,6 +94,7 @@ void setup() {
     display.drawBitmap(piggyLogo, 0, 0, 104, 104, GxEPD_WHITE);
     display.updateWindow(0, 0, 104, 104, true);
 
+    #ifndef DEBUG
     Serial.println("Connecting to " + String(ssid));
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
@@ -96,6 +103,7 @@ void setup() {
     }
     Serial.print("WiFi connected! IP address: ");
     Serial.println(WiFi.localIP());
+    #endif
 
     // bitcoin logo indicates wifi is connected
     display.drawBitmap(epd_bitmap_Bitcoin, displayWidth() - 104, 0, 104, 104, GxEPD_WHITE);
@@ -107,18 +115,22 @@ void loop() {
     whiteDisplay();
 
     displayVoltageAndLowBatteryWarning();
-    printBalance(getWalletBalance());
+    int yAfterBalance = printBalance(getWalletBalance()) + 5;
+    #ifdef LILYGO_T5_V266
+    yAfterBalance += 12;
+    #endif
     display.update();
 
     String lnurlp = getLNURLp();
+    int xBeforeLNURLp = displayWidth();
     if (lnurlp == "null") {
       Serial.println("Warning, could not find lnurlp link for this wallet, did you create one?");
       Serial.println("You can do so by activating the LNURLp extension in LNBits, clicking on the extension, and clicking 'NEW PAY LINK'");
       Serial.println("You probably don't want to go for 'fixed amount', but rather for any amount.");
     } else {
-        showLNURLpQR(lnurlp);
+        xBeforeLNURLp = showLNURLpQR(lnurlp);
     }
-    getLNURLPayments(3);
+    getLNURLPayments(2, xBeforeLNURLp, yAfterBalance);
     display.update();
 
     hibernate(6 * 60 * 60);

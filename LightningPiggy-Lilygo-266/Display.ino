@@ -21,8 +21,12 @@ void whiteDisplay() {
 
 int displayHeight() {
   // lilygo 2.66 is 152px, lilygo 2.13 is 122px
+  #ifdef LILYGO_T5_V213
+  return 122; // on the LILYGO_T5_V213, GxEPD_WIDTH is incorrectly set to 128
+  #else
   //return 122; // for testing the 2.13's lower resolution on the 2.66's high res display
   return GxEPD_WIDTH; // width and height are swapped because display is rotated
+  #endif
 }
 
 int displayWidth() {
@@ -79,7 +83,10 @@ void verticalLine() {
     }
 }
 
-void printBalance(int balance) {
+/*
+ * returns: vertical cursor after printing balance
+ */
+int printBalance(int balance) {
     String walletBalanceText = String(balance) + " sats";
 
     int16_t x1, y1;
@@ -89,6 +96,7 @@ void printBalance(int balance) {
     //Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(walletBalanceTextHeight)); // typical value for Lato_Medium_26: 1,-19,118,20
     display.setCursor(1, h);
     display.print(walletBalanceText);
+    return h;
 }
 
 void printTextCentered(char* str) {
