@@ -84,7 +84,11 @@ void getLNURLPayments(int limit, int maxX, int startY) {
 
         String paymentDetail(comment);
         String paymentAmount(amount);
-        paymentDetail = String(paymentAmount) + " sats: " + paymentDetail;
+        String units = "sats";
+        if (amount < 2) {
+          units = "sat";
+        }
+        paymentDetail = paymentAmount + " " + units + ": " + paymentDetail;
         // first cut off max total length
         paymentDetail = paymentDetail.substring(0, maxPaymentDetailStrLength * maxLinesPerComment);
 

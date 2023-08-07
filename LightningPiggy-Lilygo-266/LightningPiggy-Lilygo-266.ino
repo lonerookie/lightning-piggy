@@ -61,7 +61,7 @@
 #include "Fonts/LatoMedium26pt.h"
 
 // DEBUG causes no wifi connection and only dummy data to be used
-//#define DEBUG
+#define DEBUG
 
 // Global variables for display
 GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
