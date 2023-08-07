@@ -20,14 +20,14 @@ void whiteDisplay() {
 }
 
 int displayHeight() {
-  // lilygo 2.66 is 152px, lilygo 2.13 is 104px
-  //return 104; // for testing the 2.13's lower resolution on the 2.66's high res display
+  // lilygo 2.66 is 152px, lilygo 2.13 is 122px
+  //return 122; // for testing the 2.13's lower resolution on the 2.66's high res display
   return GxEPD_WIDTH; // width and height are swapped because display is rotated
 }
 
 int displayWidth() {
-  // lilygo 2.66 is 296px, lilygo 2.13 is 212px
-  //return 212; // for testing the 2.13's lower resolution on the 2.66's high res display
+  // lilygo 2.66 is 296px, lilygo 2.13 is 250px
+  //return 250; // for testing the 2.13's lower resolution on the 2.66's high res display
   return GxEPD_HEIGHT; // width and height are swapped because display is rotated
 }
 
@@ -38,7 +38,7 @@ int displayWidth() {
 // size 4 = 26pt
 void setFont(int fontSize) {
   // if it's a big display, then scale up the fonts
-  if (displayWidth() > 212) {
+  if (displayWidth() > 250) {
     fontSize++;
   }
   Serial.println("Font size adjusted for display size: " + String(fontSize));
