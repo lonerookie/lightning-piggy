@@ -115,7 +115,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
         }
         yPos += 4;
         #ifdef LILYGO_T5_V266
-        yPos += 3;
+        yPos += 4;
         #endif
       }
     }

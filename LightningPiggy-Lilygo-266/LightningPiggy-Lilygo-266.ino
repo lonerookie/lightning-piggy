@@ -60,9 +60,6 @@
 #include "Fonts/LatoMedium20pt.h"
 #include "Fonts/LatoMedium26pt.h"
 
-// DEBUG causes no wifi connection and only dummy data to be used
-//#define DEBUG
-
 // Global variables for display
 GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
 GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
@@ -91,8 +88,12 @@ void setup() {
     }
 
     // piggy logo indicates board is starting
-    display.drawBitmap(piggyLogo, 0, 0, 104, 104, GxEPD_WHITE);
-    display.updateWindow(0, 0, 104, 104, true);
+    int logoheight = 104;
+    int logowidth = 104;
+    int logoheightcentered = (displayHeight() - logoheight) / 2;
+    int logowidthcentered = ((displayWidth() / 2) - logowidth) / 2;
+    display.drawBitmap(piggyLogo, logowidthcentered, logoheightcentered, logowidth, logoheight, GxEPD_WHITE);
+    display.updateWindow(logowidthcentered, logoheightcentered, logowidth, logoheight, true);
 
     #ifndef DEBUG
     Serial.println("Connecting to " + String(ssid));
@@ -106,8 +107,9 @@ void setup() {
     #endif
 
     // bitcoin logo indicates wifi is connected
-    display.drawBitmap(epd_bitmap_Bitcoin, displayWidth() - 104, 0, 104, 104, GxEPD_WHITE);
-    display.updateWindow(displayWidth() - 104, 0, 104, 104, true);
+    logowidthcentered = (((displayWidth() / 2) - logowidth) / 2) + (displayWidth() / 2);
+    display.drawBitmap(epd_bitmap_Bitcoin, logowidthcentered, logoheightcentered, logowidth, logoheight, GxEPD_WHITE);
+    display.updateWindow(logowidthcentered, logoheightcentered, logowidth, logoheight, true);
 }
 
 
@@ -117,7 +119,7 @@ void loop() {
     displayVoltageAndLowBatteryWarning();
     int yAfterBalance = printBalance(getWalletBalance()) + 5;
     #ifdef LILYGO_T5_V266
-    yAfterBalance += 12;
+    yAfterBalance += 10;
     #endif
     display.update();
 
