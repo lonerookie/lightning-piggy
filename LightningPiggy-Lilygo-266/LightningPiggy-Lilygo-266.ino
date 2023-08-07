@@ -117,7 +117,7 @@ void loop() {
     whiteDisplay();
 
     displayVoltageAndLowBatteryWarning();
-    int yAfterBalance = printBalance(getWalletBalance()) + 5;
+    int yAfterBalance = printBalance(getWalletBalance()) + 6;
     #ifdef LILYGO_T5_V266
     yAfterBalance += 10;
     #endif
