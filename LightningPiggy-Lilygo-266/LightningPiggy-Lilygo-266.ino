@@ -32,13 +32,9 @@
 // - set "Comment maximum characters" to 128
 // - set "Webhook URL" to https://p.lightningpiggy.com/
 // - set a "Success message", like: Thanks for sending sats to my piggy
-//
-// TODO:
-// - metrics
-
-#include <WiFiClientSecure.h>
 
 #define LILYGO_T5_V266
+// For 2.13 inch LilyGo, uncomment LILYGO_T5_V266 above and comment in LILYGO_T5_V213 below:
 //#define LILYGO_T5_V213
 #include <boards.h>
 
@@ -48,6 +44,7 @@
 // Display stuff:
 #include <GxEPD.h>
 #include <GxDEPG0266BN/GxDEPG0266BN.h>    // 2.66" black/white ePaper display by DKE GROUP
+// For 2.13 inch LilyGo, uncomment GxDEPG0266BN.h above and comment in GxDEPG0213BN (or GxGDEM0213B74) below:
 //#include <GxDEPG0213BN/GxDEPG0213BN.h>    // 2.13" black/white ePaper display by DKE GROUP
 //#include <GxGDEM0213B74/GxGDEM0213B74.h>  // 2.13" b/w  form GoodDisplay 4-color
 #include <GxIO/GxIO_SPI/GxIO_SPI.h>
@@ -64,9 +61,12 @@
 GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
 GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
+String currentVersion = "1.4.0";
+String latestVersion = ""; // used by updateChecker
+
 void setup() {
     Serial.begin(115200);
-    Serial.println("Lightning Piggy version 1.3.0 starting up");
+    Serial.println("Lightning Piggy version " + currentVersion + " starting up");
 
     // turn on the green LED-IO12 on the PCB, to show the board is on
     // it will turn off when the board hibernates
@@ -96,14 +96,7 @@ void setup() {
     display.updateWindow(logowidthcentered, logoheightcentered, logowidth, logoheight, true);
 
     #ifndef DEBUG
-    Serial.println("Connecting to " + String(ssid));
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.print("WiFi connected! IP address: ");
-    Serial.println(WiFi.localIP());
+    connectWifi();
     #endif
 
     // bitcoin logo indicates wifi is connected
@@ -134,6 +127,14 @@ void loop() {
     }
     getLNURLPayments(2, xBeforeLNURLp, yAfterBalance);
     display.update();
+
+    // Update check and show
+    if (latestVersion == "") {
+      latestVersion = getLatestVersion();
+      if (latestVersion != "" && latestVersion != currentVersion) {
+        showUpdateAvailable();
+      }
+    }
 
     hibernate(6 * 60 * 60);
 }
