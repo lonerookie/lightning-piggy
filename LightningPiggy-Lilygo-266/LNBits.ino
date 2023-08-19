@@ -74,22 +74,27 @@ void getLNURLPayments(int limit, int maxX, int startY) {
   }
 
   Serial.println("Displaying payment amounts and comments...");
-  uint16_t yPos = startY;
   int maxpixels = maxX;
+  uint16_t yPos = startY;
   unsigned int maxLinesPerComment = 3;
   String output;
   for (JsonObject areaElems : doc.as<JsonArray>()) {
     Serial.println("Parsing payment...");
     if(areaElems["extra"] && !areaElems["pending"] && areaElems["extra"]["tag"]) {
+
+      // Only do lnurlp payments
       const char* tag = areaElems["extra"]["tag"];
       if(strcmp(tag,"lnurlp") == 0) {
+
+        // Payment always has an amount
         int amount = areaElems["amount"];
         amount = amount / 1000; // millisats to sats
         String paymentAmount(amount);
         String units = "sats";
         if (amount < 2) units = "sat";
-
         String paymentDetail = paymentAmount + " " + units;
+
+        // Payment has an optional comment
         if (areaElems["extra"]["comment"]) {
           Serial.println("Getting comment...");
           const char* comment = areaElems["extra"]["comment"];
@@ -103,30 +108,51 @@ void getLNURLPayments(int limit, int maxX, int startY) {
           paymentDetail += ": yes, great!";
         }
 
-        // first calculate how many lines are needed
-        unsigned int linesNeeded = (paymentDetail.length() / maxPaymentDetailStrLength) + 1;
-        Serial.println("linesNeeded = " + String(linesNeeded));
-        linesNeeded = min(maxLinesPerComment, linesNeeded);
-        Serial.println("linesNeeded = " + String(linesNeeded));
+        // First, in the biggest font, try to fit the entire paymentDetail.
+        int fontSize = 4;
+        uint16_t localYPos = yPos; // save yPos so it can be restored
 
-        // cycle through the lines to show
-        for (int line=0;line<linesNeeded;line++) {
-          output = paymentDetail.substring(line*maxPaymentDetailStrLength, line*maxPaymentDetailStrLength+maxPaymentDetailStrLength);
-          Serial.println("getLNURLPayments output for line " + String(line) +" = " + output);
-          int16_t x1, y1;
-          uint16_t w, h;
-          setFont(2);
-          Serial.println("setting cursor to " + String(yPos));
-          display.getTextBounds(output, 0, 0, &x1, &y1, &w, &h);
-          Serial.println("getTextBounds: " + String(x1) + "," + String(y1) + ","+ String(w) + ","+ String(h));
-          display.setCursor(0, yPos + h);
-          display.print(output);
+        while (fontSize > 0) {
+          setFont(fontSize, false);
+          yPos = localYPos;
+          display.fillRect(0, yPos, maxX, displayHeight(), GxEPD_WHITE);
 
-          yPos = yPos + h + 1;
+          // display the entire text
+          int textPos = 0;
+          while (textPos < paymentDetail.length()) {
+            // Try to fit everything that still needs displaying:
+            String paymentDetailWithoutAlreadyPrintedPart = paymentDetail.substring(textPos);
+            int chars = fitMaxText(paymentDetailWithoutAlreadyPrintedPart, maxX);
+
+            // Now we know how much fits, so print it:
+            String textLine = paymentDetail.substring(textPos, textPos+chars);
+            Serial.println("first line that fits: " + textLine);
+
+            int16_t x1, y1;
+            uint16_t w, h;
+            display.getTextBounds(textLine, 0, 0, &x1, &y1, &w, &h);
+            Serial.println("getTextBounds of textLine: " + String(x1) + "," + String(y1) + ","+ String(w) + ","+ String(h));
+            display.setCursor(0, yPos + h); // bottom of the line
+            display.print(textLine);
+
+            textPos += chars;
+            yPos += h;
+          }
+
+          // If that fails, try smaller fonts.
+          Serial.println("After writing the paymentDetail, yPos = " + String(yPos) + " while displayHeight = " + String(displayHeight()));
+          if (yPos < displayHeight()) {
+            Serial.println("yPos < displayHeight so it fits!");
+            break; // exit the fontSize loop because it fits
+          } else {
+            fontSize--;
+          }
         }
-        yPos += 4;
+        Serial.println("After fontSize loop, yPos = " + String(yPos));
+
+        yPos += 3;
         #ifdef LILYGO_T5_V266
-        yPos += 4;
+        yPos += 3;
         #endif
       } else {
         Serial.println("Skipping because extra tag is not lnurlp...");

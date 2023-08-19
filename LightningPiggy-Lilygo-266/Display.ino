@@ -35,14 +35,18 @@ int displayWidth() {
   return GxEPD_HEIGHT; // width and height are swapped because display is rotated
 }
 
+void setFont(int fontSize) {
+  setFont(fontSize, true);
+}
+
 // size 0 = smallest font (8pt)
 // size 1 = 12pt
 // size 2 = 18pt
 // size 3 = 20pt
 // size 4 = 26pt
-void setFont(int fontSize) {
+void setFont(int fontSize, boolean scaleUp) {
   // if it's a big display, then scale up the fonts
-  if (displayWidth() > 250) {
+  if (displayWidth() > 250 && scaleUp) {
     fontSize++;
   }
   Serial.println("Font size adjusted for display size: " + String(fontSize));
@@ -81,6 +85,31 @@ void verticalLine() {
     for (int16_t y = 0; y<displayHeight()+1; y++) {
       display.drawPixel(displayWidth()+1,y,0);
     }
+}
+
+
+// find the max length that fits the width
+int fitMaxText(String text, int maxWidth) {
+  int maxLength = 0;
+  int16_t x1, y1;
+  uint16_t w, h;
+
+  // first get height of one big character
+  display.getTextBounds("$", 0, 0, &x1, &y1, &w, &h);
+  //Serial.println("Got big character bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h) + " for text: $");
+  uint16_t maxHeight = h * 1.5; // ensure it's really big, but smaller than 2 lines
+  Serial.println("maxHeight = " + String(maxHeight));
+  h = 0;
+
+  while (maxLength < text.length() && h < maxHeight && w < maxWidth) {
+    String textToFit = text.substring(0, maxLength+2); // end is exclusive
+    display.getTextBounds(textToFit, 0, 0, &x1, &y1, &w, &h);
+    //Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h) + " for text: " + textToFit);
+    maxLength++;
+  }
+
+  Serial.println("Max text length that fits: " + String(maxLength));
+  return maxLength;
 }
 
 /*
