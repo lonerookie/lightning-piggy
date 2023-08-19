@@ -61,14 +61,48 @@ String getEndpointData(const char * host, String endpointUrl) {
     // chunked means first length, then content, then length, then content, until length == "0"
     // no need to support content that has newlines, as it's json so newlines are encoded as \n
     String reply = "";
-    line = client.readStringUntil('\n');
-    Serial.println("chunked reader got first (empty?) line: '" + line + "'");
+
+    String lengthline = client.readStringUntil('\n');
+    Serial.println("chunked reader got length line: '" + lengthline + "'");
+
+    while (lengthline != "0\r") {
+      const char *lengthLineChar = lengthline.c_str();
+      int bytesToRead = strtol(lengthLineChar, NULL, 16);
+      Serial.print("bytesToRead = ");
+      Serial.println(bytesToRead);
+
+      // TODO: speed up this function by reading multiple bytes at a time: int read(uint8_t *buf, size_t size);
+      // Currently it takes around 500ms, which is not bad, but not great.
+      Serial.print("millis() before slow function: "); Serial.println(millis());
+      int bytesRead = 0;
+      for (int i=0;i<bytesToRead;i++) {
+        char c = client.read();
+        //Serial.print("Got char: "); Serial.write(c);
+        String byteRead(c);
+        reply = reply + byteRead;
+        //Serial.println("chunked total reply = '" + reply + "'");
+      }
+      Serial.print("millis() after slow function: "); Serial.println(millis());
+
+      // first the newline character so skip it:
+      lengthline = client.readStringUntil('\n');
+      Serial.println("chunked reader got empty line due to newline character: '" + lengthline + "'");
+
+      // then the real length
+      lengthline = client.readStringUntil('\n');
+      Serial.println("chunked reader got length line: '" + lengthline + "'");
+    }
+
+    /*
+    reply = reply + client.readBytes(bytesToRead);
     while (line != "0\r") {
       reply = reply + client.readStringUntil('\n');
       Serial.println("chunked total reply = '" + reply + "'");
       line = client.readStringUntil('\n');
       Serial.println("chunked reader got length line: '" + line + "'");
     }
+    */
+    Serial.println("returning total chunked reply = '" + reply + "'");
     return reply;
   }
 }
