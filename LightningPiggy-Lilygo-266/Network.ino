@@ -1,5 +1,7 @@
 #include <WiFiClientSecure.h>
 
+#define BUFFSIZE 256
+
 void connectWifi() {
   Serial.println("Connecting to " + String(ssid));
   WiFi.begin(ssid, password);
@@ -59,7 +61,6 @@ String getEndpointData(const char * host, String endpointUrl) {
     return line;
   } else {
     // chunked means first length, then content, then length, then content, until length == "0"
-    // no need to support content that has newlines, as it's json so newlines are encoded as \n
     String reply = "";
 
     String lengthline = client.readStringUntil('\n');
@@ -68,40 +69,29 @@ String getEndpointData(const char * host, String endpointUrl) {
     while (lengthline != "0\r") {
       const char *lengthLineChar = lengthline.c_str();
       int bytesToRead = strtol(lengthLineChar, NULL, 16);
-      Serial.print("bytesToRead = ");
-      Serial.println(bytesToRead);
+      Serial.println("bytesToRead = " + String(bytesToRead));
 
-      // TODO: speed up this function by reading multiple bytes at a time: int read(uint8_t *buf, size_t size);
-      // Currently it takes around 500ms, which is not bad, but not great.
-      Serial.print("millis() before slow function: "); Serial.println(millis());
       int bytesRead = 0;
-      for (int i=0;i<bytesToRead;i++) {
-        char c = client.read();
+      while (bytesRead < bytesToRead) { // stop if less than max bytes are read
+        uint8_t buff[BUFFSIZE] = {0}; // zero initialize buffer to have 0x00 at the end
+        int readNow = min(bytesToRead - bytesRead,BUFFSIZE-1); // leave one byte for the 0x00 at the end
+        //Serial.println("Reading bytes: " + String(readNow));
+        bytesRead += client.read(buff, readNow);;
         //Serial.print("Got char: "); Serial.write(c);
-        String byteRead(c);
-        reply = reply + byteRead;
+        String stringBuff = (char*)buff;
+        reply += stringBuff;
         //Serial.println("chunked total reply = '" + reply + "'");
       }
-      Serial.print("millis() after slow function: "); Serial.println(millis());
 
-      // first the newline character so skip it:
-      lengthline = client.readStringUntil('\n');
-      Serial.println("chunked reader got empty line due to newline character: '" + lengthline + "'");
+      // skip \r\n
+      client.read();
+      client.read();
 
-      // then the real length
+      // next chunk length
       lengthline = client.readStringUntil('\n');
       Serial.println("chunked reader got length line: '" + lengthline + "'");
     }
 
-    /*
-    reply = reply + client.readBytes(bytesToRead);
-    while (line != "0\r") {
-      reply = reply + client.readStringUntil('\n');
-      Serial.println("chunked total reply = '" + reply + "'");
-      line = client.readStringUntil('\n');
-      Serial.println("chunked reader got length line: '" + line + "'");
-    }
-    */
     Serial.println("returning total chunked reply = '" + reply + "'");
     return reply;
   }
