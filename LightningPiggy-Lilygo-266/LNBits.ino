@@ -142,17 +142,8 @@ String getLNURLp() {
     Serial.println(error.f_str());
   }
   String lnurlpId = doc[0]["id"];
+  String lnurlp = doc[0]["lnurl"];
 
-  Serial.println("Getting LNURLp link for LNURLp ID: " + lnurlpId);
-  lnurlpData = getEndpointData(lnbitsHost, "/lnurlp/api/v1/links/" + lnurlpId);
-  DynamicJsonDocument firstlink(8192); // create new DynamicJsonDocument as recommended by the docs
-  error = deserializeJson(firstlink, lnurlpData);
-  if (error)
-  {
-    Serial.print("deserializeJson() failed: ");
-    Serial.println(error.f_str());
-  }
-  String lnurlp = firstlink["lnurl"];
   Serial.println(lnurlp);
   return lnurlp;
 }
