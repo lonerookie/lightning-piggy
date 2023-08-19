@@ -30,7 +30,7 @@
 // - set currency to "satoshis"
 // - click "Advanced options"
 // - set "Comment maximum characters" to 128
-// - set "Webhook URL" to https://p.lightningpiggy.com/
+// - set "Webhook URL" to https://p.lightningpiggy.com/ (optional, for anonymous usage metrics)
 // - set a "Success message", like: Thanks for sending sats to my piggy
 
 #define LILYGO_T5_V266
@@ -84,6 +84,8 @@ void setup() {
       display.update();
     }
 
+    #ifndef DEBUG
+
     // piggy logo indicates board is starting
     int logoheight = 104;
     int logowidth = 104;
@@ -92,14 +94,14 @@ void setup() {
     display.drawBitmap(piggyLogo, logowidthcentered, logoheightcentered, logowidth, logoheight, GxEPD_WHITE);
     display.updateWindow(logowidthcentered, logoheightcentered, logowidth, logoheight, true);
 
-    #ifndef DEBUG
     connectWifi();
-    #endif
 
     // bitcoin logo indicates wifi is connected
     logowidthcentered = (((displayWidth() / 2) - logowidth) / 2) + (displayWidth() / 2);
     display.drawBitmap(epd_bitmap_Bitcoin, logowidthcentered, logoheightcentered, logowidth, logoheight, GxEPD_WHITE);
     display.updateWindow(logowidthcentered, logoheightcentered, logowidth, logoheight, true);
+
+    #endif
 }
 
 
