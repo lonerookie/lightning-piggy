@@ -1,4 +1,4 @@
-String currentVersion = "1.4.3";
+String currentVersion = "1.4.4";
 String newVersion = ""; // used by the update checker
 
 #ifdef LILYGO_T5_V266
@@ -44,6 +44,7 @@ String getFullVersion() {
  * returns: the new version that should be installed
  */
 String checkNewVersion() {
+  Serial.println("Checking for updates...");
   return getEndpointData(checkUpdateHost, "/");
 }
 
