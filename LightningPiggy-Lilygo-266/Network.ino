@@ -32,7 +32,7 @@ String getEndpointData(const char * host, String endpointUrl) {
 
   const String request = String("GET ") + endpointUrl + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
-               "User-Agent: LightningPiggy\r\n" +
+               "User-Agent: " + getFullVersion() + "\r\n" +
                "X-Api-Key: " + invoiceKey + " \r\n" +
                "Content-Type: application/json\r\n" +
                "Connection: close\r\n\r\n";
@@ -62,12 +62,12 @@ String getEndpointData(const char * host, String endpointUrl) {
     // no need to support content that has newlines, as it's json so newlines are encoded as \n
     String reply = "";
     line = client.readStringUntil('\n');
-    Serial.println("chunked reader got line: " + line);
+    Serial.println("chunked reader got first (empty?) line: '" + line + "'");
     while (line != "0\r") {
       reply = reply + client.readStringUntil('\n');
-      Serial.println("chunked total reply = " + reply);
+      Serial.println("chunked total reply = '" + reply + "'");
       line = client.readStringUntil('\n');
-      Serial.println("chunked reader got line: " + line);
+      Serial.println("chunked reader got length line: '" + line + "'");
     }
     return reply;
   }

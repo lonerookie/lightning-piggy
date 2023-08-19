@@ -61,12 +61,9 @@
 GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
 GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
-String currentVersion = "1.4.0";
-String latestVersion = ""; // used by updateChecker
-
 void setup() {
     Serial.begin(115200);
-    Serial.println("Lightning Piggy version " + currentVersion + " starting up");
+    Serial.println("Staring Lightning Piggy " + getFullVersion());
 
     // turn on the green LED-IO12 on the PCB, to show the board is on
     // it will turn off when the board hibernates
@@ -128,13 +125,9 @@ void loop() {
     getLNURLPayments(2, xBeforeLNURLp, yAfterBalance);
     display.update();
 
-    // Update check and show
-    if (latestVersion == "") {
-      latestVersion = getLatestVersion();
-      if (latestVersion != "" && latestVersion != currentVersion) {
-        showUpdateAvailable();
-      }
-    }
+    #ifndef DEBUG
+    checkShowUpdateAvailable();
+    #endif
 
     hibernate(6 * 60 * 60);
 }
