@@ -102,6 +102,8 @@ void setup() {
     display.updateWindow(logowidthcentered, logoheightcentered, logowidth, logoheight, true);
 
     #endif
+
+    setup_temperature_sensor();
 }
 
 
@@ -109,9 +111,9 @@ void loop() {
     whiteDisplay();
 
     displayVoltageAndLowBatteryWarning();
-    int yAfterBalance = printBalance(getWalletBalance()) + 6;
+    int yAfterBalance = printBalance(getWalletBalance()) + 4;
     #ifdef LILYGO_T5_V266
-    yAfterBalance += 5;
+    yAfterBalance += 4;
     #endif
     display.update();
 

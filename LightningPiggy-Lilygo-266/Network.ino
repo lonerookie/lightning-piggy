@@ -13,6 +13,10 @@ void connectWifi() {
   Serial.println(WiFi.localIP());
 }
 
+bool wifiConnected() {
+  return (WiFi.status() == WL_CONNECTED);
+}
+
 /**
  * @brief GET data from a HTTPS URL
  *

@@ -29,6 +29,29 @@ void checkShowUpdateAvailable() {
     }
 }
 
+String getShortDisplayInfo() {
+  String shortDisplayInfo = "";
+  if (hardwareBoard == "LILYGOT5V266") {
+    shortDisplayInfo = "2.66";
+  } else if (hardwareBoard == "LILYGOT5V213") {
+    shortDisplayInfo = "2.13";
+  } else {
+    shortDisplayInfo = "?.??";
+  }
+  if (hardwareDisplay == "DEPG0266BN" || hardwareDisplay == "DEPG0213BN") {
+    shortDisplayInfo += "D";
+  } else if (hardwareDisplay == "GDEM0213B74") {
+    shortDisplayInfo += "G";
+  } else {
+    shortDisplayInfo += "?";
+  }
+  return shortDisplayInfo;
+}
+
+String getShortVersion() {
+  return currentVersion;
+}
+
 String getFullVersion() {
   const char compiletime[] = __DATE__ " " __TIME__;
   String compileTime(compiletime);
