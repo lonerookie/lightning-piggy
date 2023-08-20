@@ -110,11 +110,7 @@ void setup() {
 void loop() {
     whiteDisplay();
 
-    displayVoltageAndLowBatteryWarning();
-    int yAfterBalance = printBalance(getWalletBalance()) + 4;
-    #ifdef LILYGO_T5_V266
-    yAfterBalance += 4;
-    #endif
+    int yAfterBalance = printBalance(getWalletBalance());
     display.update();
 
     String lnurlp = getLNURLp();
@@ -126,7 +122,8 @@ void loop() {
     } else {
         xBeforeLNURLp = showLNURLpQR(lnurlp);
     }
-    getLNURLPayments(2, xBeforeLNURLp, yAfterBalance);
+    getLNURLPayments(2, xBeforeLNURLp, yAfterBalance + 4);
+    displayHealthAndStatus();
     display.update();
 
     #ifndef DEBUG

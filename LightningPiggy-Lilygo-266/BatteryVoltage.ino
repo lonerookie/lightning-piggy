@@ -12,19 +12,14 @@ double getBatteryVoltage() {
     totalLevel = totalLevel / 3;
     Serial.println("Average battery level: " + String(totalLevel));
 
-    double voltage = (totalLevel * 1.72) / 1000;  
+    double voltage = (totalLevel * 1.72) / 1000;
+    //return 3.7; // for testing low battery situation
     return voltage;
 }
 
-// Also displays LOW BATTERY warning
-void displayVoltageAndLowBatteryWarning() {
+// This function also displays the LOW BATTERY warning:
+void displayHealthAndStatus() {
     double voltage = getBatteryVoltage();
-
-    if (voltage < 3.8) {
-      setFont(3);
-      display.setCursor(10,40);
-      display.print((char*)String("LOW BATTERY!").c_str());
-    }
 
     setFont(1);
     int16_t x1, y1;
@@ -70,6 +65,19 @@ void displayVoltageAndLowBatteryWarning() {
     display.setCursor(displayWidth()-w-xOffset,yPos);
     display.print((char*)versionChar);
     yPos = yPos - h - 1;
+
+    // Print big fat warning on top of everything if low battery
+    if (voltage < 3.8) {
+      setFont(2);
+      const char * lowBatChar = " ! LOW BATTERY ! ";
+      display.setCursor(1,displayHeight()-1);
+      display.getTextBounds((char*)lowBatChar, 1, displayHeight()-1, &x1, &y1, &w, &h);
+      Serial.println("Got lowBatChar bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h));
+      display.fillRect(x1, y1-4, w+4, h+4, GxEPD_BLACK);
+      display.setTextColor(GxEPD_WHITE);
+      display.print((char*)lowBatChar);
+      display.setTextColor(GxEPD_BLACK);
+    }
 }
 
 // returns true if battery was low

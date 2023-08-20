@@ -35,21 +35,12 @@ int displayWidth() {
   return GxEPD_HEIGHT; // width and height are swapped because display is rotated
 }
 
-void setFont(int fontSize) {
-  setFont(fontSize, true);
-}
-
 // size 0 = smallest font (8pt)
 // size 1 = 12pt
 // size 2 = 18pt
 // size 3 = 20pt
 // size 4 = 26pt
-void setFont(int fontSize, boolean scaleUp) {
-  // if it's a big display, then scale up the fonts
-  if (displayWidth() > 250 && scaleUp) {
-    fontSize++;
-  }
-  Serial.println("Font size adjusted for display size: " + String(fontSize));
+void setFont(int fontSize) {
   if (fontSize < 0) {
     Serial.println("ERROR: font size " + String(fontSize) + " is not supported, setting min size");
     display.setFont(&Lato_Medium_8);

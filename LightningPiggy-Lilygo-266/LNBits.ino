@@ -41,11 +41,6 @@ int getWalletBalance() {
 void getLNURLPayments(int limit, int maxX, int startY) {
   Serial.println("Getting " + String(limit) + " LNURL payments...");
 
-  uint8_t maxPaymentDetailStrLength = 20; // Leave some space on the right for other values
-  #ifdef LILYGO_T5_V266
-  maxPaymentDetailStrLength += 5;
-  #endif
-
   const String url = "/api/v1/payments?limit=" + String(limit);
 
   #ifdef DEBUG
@@ -78,10 +73,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
   }
 
   Serial.println("Displaying payment amounts and comments...");
-  int maxpixels = maxX;
   uint16_t yPos = startY;
-  unsigned int maxLinesPerComment = 3;
-  String output;
   for (JsonObject areaElems : doc.as<JsonArray>()) {
     Serial.println("Parsing payment...");
     if(areaElems["extra"] && !areaElems["pending"] && areaElems["extra"]["tag"]) {
@@ -124,7 +116,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
         }
 
         while (fontSize > 0) {
-          setFont(fontSize, false);
+          setFont(fontSize);
           yPos = savedYPos;
           display.fillRect(0, yPos, maxX, displayHeight(), GxEPD_WHITE);
 
@@ -162,9 +154,6 @@ void getLNURLPayments(int limit, int maxX, int startY) {
         Serial.println("After fontSize loop, yPos = " + String(yPos));
 
         yPos += 3;
-        #ifdef LILYGO_T5_V266
-        yPos += 3;
-        #endif
       } else {
         Serial.println("Skipping because extra tag is not lnurlp...");
       }
