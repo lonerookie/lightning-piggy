@@ -1,3 +1,8 @@
+// DEBUG causes no wifi connection and only dummy data to be used,
+// for faster startup and testing of display code etc.
+//
+//#define DEBUG
+
 // These values get replaced with the user provided values by the Web Serial Installer for Lightning Piggy.
 // But you can also replace them manually yourself here if you don't plan on using the Web Installer.
 const char* ssid     = "REPLACETHISBYWIFISSID_REPLACETHISBYWIFISSID_REPLACETHISBYWIFISSID"; // wifi SSID here
