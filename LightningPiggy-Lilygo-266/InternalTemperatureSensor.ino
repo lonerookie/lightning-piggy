@@ -29,7 +29,7 @@ void setup_temperature_sensor() {
     rtc_cpu_freq_config_t freq_config;
     rtc_clk_cpu_freq_get_config(&freq_config);
     //should be "0 -- 150000 -- 240", internal oscillator running at ~150kHz and CPU at 240 MHz
-    printf("%d -- %d -- %d\r\n", (int)rtc_clk_slow_freq_get(), rtc_clk_slow_freq_get_hz(), freq_config.freq_mhz);
+    //printf("%d -- %d -- %d\r\n", (int)rtc_clk_slow_freq_get(), rtc_clk_slow_freq_get_hz(), freq_config.freq_mhz);
 }
 
 #define M1_CALPOINT1_CELSIUS 23.0f

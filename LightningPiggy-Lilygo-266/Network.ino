@@ -96,7 +96,7 @@ String getEndpointData(const char * host, String endpointUrl) {
       Serial.println("chunked reader got length line: '" + lengthline + "'");
     }
 
-    Serial.println("returning total chunked reply = '" + reply + "'");
+    //Serial.println("returning total chunked reply = '" + reply + "'");
     return reply;
   }
 }

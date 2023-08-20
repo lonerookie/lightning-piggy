@@ -22,14 +22,14 @@ int getWalletBalance() {
 
   if (walletName == "null") {
     Serial.println("ERROR: could not find wallet details on lnbits host " + String(lnbitsHost) + " with invoice/read key " + String(invoiceKey) + " so something's wrong! Did you make a typo?");
+  } else {
+    Serial.print("Wallet name: " + walletName);
   }
 
   int walletBalance = doc["balance"];
   walletBalance = walletBalance / 1000;
 
-  Serial.println(walletName);
-  Serial.println(String(walletBalance) + " sats");
-
+  Serial.println(" contains " + String(walletBalance) + " sats");
   return walletBalance;
 }
 
@@ -60,8 +60,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
   const String line = getEndpointData(lnbitsHost, url);
   #endif
 
-  Serial.println("Got payments");
-  Serial.println(line);
+  Serial.println("Got payments: " + line);
 
   DynamicJsonDocument doc(limit * 4096); // 4KB per lnurlpayment should be enough for everyone (tm)
   DeserializationError error = deserializeJson(doc, line);
@@ -129,7 +128,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
 
             // Print the text that fits:
             String textLine = paymentDetail.substring(textPos, textPos+chars);
-            Serial.println("first line that fits: " + textLine);
+            //Serial.println("first line that fits: " + textLine);
 
             int16_t x1, y1;
             uint16_t w, h;
@@ -141,17 +140,18 @@ void getLNURLPayments(int limit, int maxX, int startY) {
             textPos += chars;
             yPos += h;
           }
+          //Serial.println("After writing the paymentDetail, yPos = " + String(yPos) + " while displayHeight = " + String(displayHeight()));
 
-          // If that fails, try smaller fonts.
-          Serial.println("After writing the paymentDetail, yPos = " + String(yPos) + " while displayHeight = " + String(displayHeight()));
+          // Check if the entire text fit:
           if (yPos < displayHeight()) {
-            Serial.println("yPos < displayHeight so it fits!");
+            Serial.println("yPos < displayHeight so fontSize " + String(fontSize) + " fits!");
             break; // exit the fontSize loop because it fits
           } else {
+            Serial.println("fontSize " + String(fontSize) + " did not fit so trying smaller...");
             fontSize--;
           }
         }
-        Serial.println("After fontSize loop, yPos = " + String(yPos));
+        //Serial.println("After fontSize loop, yPos = " + String(yPos));
 
         yPos += 3;
       } else {
