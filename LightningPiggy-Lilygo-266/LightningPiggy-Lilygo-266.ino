@@ -122,7 +122,7 @@ void loop() {
     } else {
         xBeforeLNURLp = showLNURLpQR(lnurlp);
     }
-    getLNURLPayments(2, xBeforeLNURLp, yAfterBalance + 4);
+    getLNURLPayments(2, xBeforeLNURLp, yAfterBalance);
     displayHealthAndStatus();
     display.update();
 

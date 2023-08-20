@@ -39,6 +39,11 @@ int getWalletBalance() {
  * @param limit 
  */
 void getLNURLPayments(int limit, int maxX, int startY) {
+
+  // Draw a line under the total sats amount
+  display.fillRect(0, startY+2, maxX-3, 1, GxEPD_BLACK);
+  startY+=4;
+
   Serial.println("Getting " + String(limit) + " LNURL payments...");
 
   const String url = "/api/v1/payments?limit=" + String(limit);
