@@ -27,7 +27,7 @@ void displayHealthAndStatus() {
     int yPos = displayHeight();
     int xOffset = 1;
 
-    // Sensor only works if wifi is connected
+    /* Temperature sensor is missing and workaround shows too high or needs calibration...
     String tempString = String(readTemp1(false), 1); // one digit after comma
     tempString += "C";
     const char *tempChar = tempString.c_str();
@@ -35,6 +35,7 @@ void displayHealthAndStatus() {
     display.setCursor(displayWidth()-w-xOffset,yPos);
     display.print((char*)tempChar);
     yPos = yPos - h - 1;
+    */
 
     String voltageString(voltage, 2);
     voltageString += "V";
