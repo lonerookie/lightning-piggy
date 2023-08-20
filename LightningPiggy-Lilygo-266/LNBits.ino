@@ -91,7 +91,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
         long amountSmaller = amount / 1000; // millisats to sats
         String paymentAmount(amountSmaller);
         String units = "sats";
-        if (amount < 2) units = "sat";
+        if (amountSmaller < 2) units = "sat";
         String paymentDetail = paymentAmount + " " + units;
 
         // Payment has an optional comment
