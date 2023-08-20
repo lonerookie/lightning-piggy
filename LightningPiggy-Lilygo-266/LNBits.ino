@@ -95,7 +95,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
           Serial.println("Getting comment...");
           const char* comment = areaElems["extra"]["comment"];
           if (!comment && areaElems["extra"]["comment"][0]) { // comments can also be a list
-            Serial.println("Getting comment from list...");
+            //Serial.println("Getting comment from list...");
             comment = areaElems["extra"]["comment"][0];
           }
           String paymentComment(comment);
@@ -134,7 +134,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
             int16_t x1, y1;
             uint16_t w, h;
             display.getTextBounds(textLine, 0, 0, &x1, &y1, &w, &h);
-            Serial.println("getTextBounds of textLine: " + String(x1) + "," + String(y1) + ","+ String(w) + ","+ String(h));
+            //Serial.println("getTextBounds of textLine: " + String(x1) + "," + String(y1) + ","+ String(w) + ","+ String(h));
             display.setCursor(0, yPos + h); // bottom of the line
             display.print(textLine);
 

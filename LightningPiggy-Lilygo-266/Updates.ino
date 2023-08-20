@@ -67,7 +67,7 @@ String getFullVersion() {
  * returns: the new version that should be installed
  */
 String checkNewVersion() {
-  Serial.println("Checking for updates...");
+  Serial.print("Checking for updates: ");
   return getEndpointData(checkUpdateHost, "/");
 }
 

@@ -89,7 +89,7 @@ int fitMaxText(String text, int maxWidth) {
   display.getTextBounds("$", 0, 0, &x1, &y1, &w, &h);
   //Serial.println("Got big character bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h) + " for text: $");
   uint16_t maxHeight = h * 1.5; // ensure it's really big, but smaller than 2 lines
-  Serial.println("maxHeight = " + String(maxHeight));
+  //Serial.println("maxHeight = " + String(maxHeight));
   h = 0;
 
   while (maxLength < text.length() && h < maxHeight && w < maxWidth) {
@@ -99,7 +99,7 @@ int fitMaxText(String text, int maxWidth) {
     maxLength++;
   }
 
-  Serial.println("Max text length that fits: " + String(maxLength));
+  //Serial.println("Max text length that fits: " + String(maxLength));
   return maxLength;
 }
 
