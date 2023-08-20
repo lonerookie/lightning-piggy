@@ -1,10 +1,8 @@
 Lightninig Piggy
 ====
-https://makers.bolt.fun/project/lightningpiggy
+
+Bitcoin Lightning piggybank using LNBits (for LNURLp) running on TTGO LilyGo ePaper hardware with ESP32 microcontroller.
+
+See https://www.lightningpiggy.com/ and https://makers.bolt.fun/project/lightningpiggy
 
 
-const char* ssid     = "SSID";
-const char* password = "PASSWORD";
-
-const char* host = "legend.lnbits.com";
-const char* invoiceKey = "xxxxxxxxxxxxxxxxxxxx";
