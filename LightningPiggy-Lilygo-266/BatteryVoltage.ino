@@ -67,6 +67,17 @@ void displayHealthAndStatus() {
     display.print((char*)versionChar);
     yPos = yPos - h - 1;
 
+    float wifiStrength = getStrength(10);
+    int wifiStrengthPercent = strengthPercent(wifiStrength);
+    Serial.println("wifi strength: " + String(wifiStrength));
+    Serial.println("wifi strength percent: " + String(wifiStrengthPercent));
+    String wifiString = "WiFi:" + String(wifiStrengthPercent);
+    const char *wifiChar = wifiString.c_str();
+    display.getTextBounds((char*)wifiChar, 0, 0, &x1, &y1, &w, &h);
+    display.setCursor(displayWidth()-w-xOffset,yPos);
+    display.print((char*)wifiChar);
+    yPos = yPos - h - 1;
+
     // Print big fat warning on top of everything if low battery
     if (voltage < 3.8) {
       setFont(2);

@@ -17,6 +17,39 @@ bool wifiConnected() {
   return (WiFi.status() == WL_CONNECTED);
 }
 
+// Take measurements of the Wi-Fi strength and return the average result.
+// 100 measurements takes 2 seconds so 20ms per measurement
+int getStrength(int points){
+    long rssi = 0;
+    long averageRSSI = 0;
+
+    for (int i=0;i < points;i++){
+        rssi += WiFi.RSSI();
+        delay(20);
+    }
+
+    averageRSSI = rssi/points;
+    return averageRSSI;
+}
+
+/*
+  RSSI Value Range WiFi Signal Strength:
+  ======================================
+  RSSI > -30 dBm  Amazing
+  RSSI < – 55 dBm   Very good signal
+  RSSI < – 67 dBm  Fairly Good
+  RSSI < – 70 dBm  Okay
+  RSSI < – 80 dBm  Not good
+  RSSI < – 90 dBm  Extremely weak signal (unusable)
+
+ */
+int strengthPercent(float strength) {
+  // ESP32 returns RSSI above 0 somethings but not when doing 10 reads...
+  // 0 = 100% and -90 = 0%
+  //return (90 + strength) * 1.09;
+  return 100 + strength;
+}
+
 /**
  * @brief GET data from a HTTPS URL
  *
