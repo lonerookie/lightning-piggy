@@ -109,7 +109,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
         }
 
         // Display the message
-        int fontSize = 4; // first try the biggest font, then go smaller
+        int fontSize = 3; // first try the biggest font, then go smaller
         uint16_t savedYPos = yPos; // save yPos so it can be restored
 
         // If not enough space is available (because the first message took it all) then claw it back
