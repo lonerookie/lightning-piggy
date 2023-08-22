@@ -11,14 +11,6 @@ void setup_display() {
     display.setRotation(1); // display is used in landscape mode
 }
 
-void whiteDisplay() {
-  display.fillScreen(GxEPD_WHITE); // erase entire display, otherwise old stuff might still be (faintly) there
-  display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false); // seems needed to avoid artifacts later on when doing partial draws
-
-  // temporarily display a border to simulate the new low resolution display
-  displayBorder();
-}
-
 int displayHeight() {
   // lilygo 2.66 is 152px, lilygo 2.13 is 122px
   #ifdef LILYGO_T5_V213
@@ -112,10 +104,11 @@ int printBalance(int balance) {
     int16_t x1, y1;
     uint16_t w, h;
     setFont(4);
-    display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &h);
-    //Serial.println("Got text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(walletBalanceTextHeight)); // typical value for Lato_Medium_26: 1,-19,118,20
+    display.getTextBounds(walletBalanceText, 0, 0, &x1, &y1, &w, &h); // Got balance text bounds: 2,-19,181,20
+    Serial.println("Got balance text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h)); // typical value for Lato_Medium_26: 1,-19,118,20
     display.setCursor(1, h);
     display.print(walletBalanceText);
+    display.updateWindow(0,0,w+2,h+5,true); // for some mysterious reason, this needs a bit of extra margin around the text (2,5) instead of (1,0)
     return h;
 }
 

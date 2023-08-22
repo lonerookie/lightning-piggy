@@ -74,7 +74,6 @@ void setup() {
     print_wakeup_reason();
 
     setup_display();
-    whiteDisplay();
 
     // update display (with delay if battery low warning)
     if (checkShowLowBattery()) {
@@ -108,10 +107,11 @@ void setup() {
 
 
 void loop() {
-    whiteDisplay();
+    int balance = getWalletBalance();
 
-    int yAfterBalance = printBalance(getWalletBalance());
-    display.update();
+    display.fillRect(0, 0, displayWidth(), displayHeight(), GxEPD_WHITE);
+    display.updateWindow(0, 0, displayWidth(), displayHeight(), true);
+    int yAfterBalance = printBalance(balance);
 
     String lnurlp = getLNURLp();
     int xBeforeLNURLp = displayWidth();
