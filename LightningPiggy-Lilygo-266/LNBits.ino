@@ -166,6 +166,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
       Serial.println("Skipping because no extra or no extra tag or still pending...");
     }
   }
+  display.updateWindow(0, startY, maxX, displayHeight()-startY, true);
 }
 
 /**

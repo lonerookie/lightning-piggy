@@ -19,13 +19,12 @@ double getBatteryVoltage() {
 
 // This function also displays the LOW BATTERY warning:
 void displayHealthAndStatus() {
-    double voltage = getBatteryVoltage();
-
     setFont(1);
     int16_t x1, y1;
     uint16_t w, h;
     int yPos = displayHeight();
     int xOffset = 1;
+    int minX = displayWidth(); // track min X to know which area of display to update
 
     /* Temperature sensor is missing and workaround shows too high or needs calibration...
     String tempString = String(readTemp1(false), 1); // one digit after comma
@@ -37,11 +36,13 @@ void displayHealthAndStatus() {
     yPos = yPos - h - 1;
     */
 
+    double voltage = getBatteryVoltage();
     String voltageString(voltage, 2);
     voltageString += "V";
     const char *voltageChar = voltageString.c_str();
     display.getTextBounds((char*)voltageChar, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(displayWidth()-w-xOffset,yPos);
+    minX = min(displayWidth()-w-xOffset,minX);
     display.print((char*)voltageChar);
     yPos = yPos - h - 1;
 
@@ -50,6 +51,7 @@ void displayHealthAndStatus() {
     const char *hallChar = hallString.c_str();
     display.getTextBounds((char*)hallChar, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(displayWidth()-w-xOffset,yPos);
+    minX = min(displayWidth()-w-xOffset,minX);
     display.print((char*)hallChar);
     yPos = yPos - h - 1;
 
@@ -57,6 +59,7 @@ void displayHealthAndStatus() {
     const char *displayChar = displayString.c_str();
     display.getTextBounds((char*)displayChar, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(displayWidth()-w-xOffset,yPos);
+    minX = min(displayWidth()-w-xOffset,minX);
     display.print((char*)displayChar);
     yPos = yPos - h - 1;
 
@@ -64,6 +67,7 @@ void displayHealthAndStatus() {
     const char *versionChar = versionString.c_str();
     display.getTextBounds((char*)versionChar, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(displayWidth()-w-xOffset,yPos);
+    minX = min(displayWidth()-w-xOffset,minX);
     display.print((char*)versionChar);
     yPos = yPos - h - 1;
 
@@ -75,34 +79,33 @@ void displayHealthAndStatus() {
     const char *wifiChar = wifiString.c_str();
     display.getTextBounds((char*)wifiChar, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(displayWidth()-w-xOffset,yPos);
+    minX = min(displayWidth()-w-xOffset,minX);
     display.print((char*)wifiChar);
     yPos = yPos - h - 1;
 
+    //Serial.println("minX,yPos = " + String(minX) + "," + String(yPos)); // minX,yPos = 192,67
+    display.updateWindow(minX, yPos, displayWidth()-minX, displayHeight()-yPos, true);
+}
+
+// returns true if voltage is low, false otherwise
+bool displayVoltageWarning() {
+    int16_t x1, y1;
+    uint16_t w, h;
+    double voltage = getBatteryVoltage();
     // Print big fat warning on top of everything if low battery
     if (voltage < 3.8) {
       setFont(2);
-      const char * lowBatChar = " ! LOW BATTERY ! ";
+      String lowBatString = " ! LOW BATTERY (" + String(voltage) + "V) ! ";
+      const char * lowBatChar = lowBatString.c_str();
       display.setCursor(1,displayHeight()-1);
       display.getTextBounds((char*)lowBatChar, 1, displayHeight()-1, &x1, &y1, &w, &h);
       Serial.println("Got lowBatChar bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h));
       display.fillRect(x1, y1-4, w+4, h+4, GxEPD_BLACK);
       display.setTextColor(GxEPD_WHITE);
       display.print((char*)lowBatChar);
+      display.updateWindow(x1, y1-4, w+4, h+4, true);
       display.setTextColor(GxEPD_BLACK);
-    }
-}
-
-// returns true if battery was low
-bool checkShowLowBattery() {
-    // show warning if battery voltage is low
-    double batteryVoltage = getBatteryVoltage();
-    Serial.println("Battery voltage: " + String(batteryVoltage));
-    if (batteryVoltage < 3.8) { // 3.7 is minimum but show warning a bit before
-            String lowBatteryString = "Low battery (" + String(batteryVoltage) + " V)";
-            const char *batteryChar = lowBatteryString.c_str();
-            setFont(2);
-            printTextCentered((char*)batteryChar);
-            return true;
+      return true;
     } else {
       return false;
     }

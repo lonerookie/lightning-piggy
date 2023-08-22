@@ -9,6 +9,7 @@ void setup_display() {
 
     display.setTextColor(GxEPD_BLACK);
     display.setRotation(1); // display is used in landscape mode
+    display.update(); // clear the screen from any old data that might faintly be there
 }
 
 int displayHeight() {

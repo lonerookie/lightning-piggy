@@ -75,13 +75,8 @@ void setup() {
 
     setup_display();
 
-    // update display (with delay if battery low warning)
-    if (checkShowLowBattery()) {
-      display.update();
-      delay(5000);
-    } else {
-      display.update();
-    }
+    // allow some time to show low battery warning
+    if (displayVoltageWarning()) delay(5000);
 
     #ifndef DEBUG
 
@@ -102,16 +97,18 @@ void setup() {
 
     #endif
 
-    setup_temperature_sensor();
+    // unused for now:
+    // setup_temperature_sensor();
 }
 
 
 void loop() {
     int balance = getWalletBalance();
-
     display.fillRect(0, 0, displayWidth(), displayHeight(), GxEPD_WHITE);
     display.updateWindow(0, 0, displayWidth(), displayHeight(), true);
     int yAfterBalance = printBalance(balance);
+
+    displayHealthAndStatus();
 
     String lnurlp = getLNURLp();
     int xBeforeLNURLp = displayWidth();
@@ -122,13 +119,12 @@ void loop() {
     } else {
         xBeforeLNURLp = showLNURLpQR(lnurlp);
     }
-    getLNURLPayments(2, xBeforeLNURLp, yAfterBalance);
-    displayHealthAndStatus();
-    display.update();
 
-    #ifndef DEBUG
-    checkShowUpdateAvailable();
-    #endif
+    getLNURLPayments(2, xBeforeLNURLp, yAfterBalance);
+
+    displayVoltageWarning();
+
+    if (wifiConnected()) checkShowUpdateAvailable();
 
     hibernate(6 * 60 * 60);
 }
