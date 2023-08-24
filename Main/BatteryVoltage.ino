@@ -70,12 +70,14 @@ void displayHealthAndStatus() {
     display.print((char*)versionChar);
     yPos = yPos - h - verticalSpace;
 
-    int wifiStrengthPercent = 0;
+    String wifiString = "Wifi:";
     if (wifiConnected()) {
-      wifiStrengthPercent = strengthPercent(getStrength(10));
+      int wifiStrengthPercent = strengthPercent(getStrength(5));
       Serial.println("wifi strength percent: " + String(wifiStrengthPercent));
+      wifiString += String(wifiStrengthPercent) + "%";
+    } else {
+      wifiString += "off";
     }
-    String wifiString = "Wifi:" + String(wifiStrengthPercent) + "%";
     const char *wifiChar = wifiString.c_str();
     display.getTextBounds((char*)wifiChar, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(displayWidth()-w-xOffset,yPos);
