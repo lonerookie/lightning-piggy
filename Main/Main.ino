@@ -54,8 +54,8 @@ void setup() {
     // piggy logo indicates board is starting
     showLogo(piggyLogo, 104, 104, ((displayWidth() / 2) - 104) / 2, 0);
 
+    displayFit("Connecting to " + String(ssid) + "...", 0, 103, displayWidth(), displayHeight(), 2); // height 104 is 1 pixel too low for fontSize so taking 103...
     #ifndef DEBUG
-    displayFit("Connecting to " + String(ssid) + "...", 0, 104, displayWidth(), displayHeight(), 2);
     connectWifi();
     #endif
 

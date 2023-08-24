@@ -99,6 +99,13 @@ int fitMaxText(String text, int maxWidth) {
 // Try to fit a String into a rectangle.
 // returns: the y position after fitting the text
 int displayFit(String paymentDetail, int startX, int startY, int endX, int endY, int fontSize) {
+  // Don't go past the end of the display and remember pixels start from zero, so [0,max-1]
+  if (endX >= displayWidth()) {
+    endX = displayWidth() - 1;
+  }
+  if (endY >= displayHeight()) {
+    endY = displayHeight() - 1;
+  }
   int yPos;
 
   while (fontSize > 0) {
@@ -132,7 +139,7 @@ int displayFit(String paymentDetail, int startX, int startY, int endX, int endY,
 
     // Check if the entire text fit:
     if (yPos < endY) {
-      //Serial.println("yPos < endY so fontSize " + String(fontSize) + " fits!");
+      Serial.println("yPos < endY so fontSize " + String(fontSize) + " fits!");
       break; // exit the fontSize loop because it fits
     } else {
       //Serial.println("fontSize " + String(fontSize) + " did not fit so trying smaller...");

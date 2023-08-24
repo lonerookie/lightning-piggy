@@ -20,7 +20,8 @@ void displayHealthAndStatus() {
     setFont(1);
     int16_t x1, y1;
     uint16_t w, h;
-    int yPos = displayHeight();
+    int verticalSpace = 2; // space between each item
+    int yPos = displayHeight() - verticalSpace;
     int xOffset = 1;
     int minX = displayWidth(); // track min X to know which area of display to update
 
@@ -42,7 +43,7 @@ void displayHealthAndStatus() {
     display.setCursor(displayWidth()-w-xOffset,yPos);
     minX = min(displayWidth()-w-xOffset,minX);
     display.print((char*)voltageChar);
-    yPos = yPos - h - 1;
+    yPos = yPos - h - verticalSpace;
 
     String hallString = String(read_internal_hall_sensor(), 2);
     hallString += "H";
@@ -51,7 +52,7 @@ void displayHealthAndStatus() {
     display.setCursor(displayWidth()-w-xOffset,yPos);
     minX = min(displayWidth()-w-xOffset,minX);
     display.print((char*)hallChar);
-    yPos = yPos - h - 1;
+    yPos = yPos - h - verticalSpace;
 
     String displayString = getShortDisplayInfo();
     const char *displayChar = displayString.c_str();
@@ -59,7 +60,7 @@ void displayHealthAndStatus() {
     display.setCursor(displayWidth()-w-xOffset,yPos);
     minX = min(displayWidth()-w-xOffset,minX);
     display.print((char*)displayChar);
-    yPos = yPos - h - 1;
+    yPos = yPos - h - verticalSpace;
 
     String versionString = "v" + getShortVersion();
     const char *versionChar = versionString.c_str();
@@ -67,19 +68,20 @@ void displayHealthAndStatus() {
     display.setCursor(displayWidth()-w-xOffset,yPos);
     minX = min(displayWidth()-w-xOffset,minX);
     display.print((char*)versionChar);
-    yPos = yPos - h - 1;
+    yPos = yPos - h - verticalSpace;
 
-    float wifiStrength = getStrength(10);
-    int wifiStrengthPercent = strengthPercent(wifiStrength);
-    Serial.println("wifi strength: " + String(wifiStrength));
-    Serial.println("wifi strength percent: " + String(wifiStrengthPercent));
-    String wifiString = "WiFi:" + String(wifiStrengthPercent);
+    int wifiStrengthPercent = 0;
+    if (wifiConnected()) {
+      wifiStrengthPercent = strengthPercent(getStrength(10));
+      Serial.println("wifi strength percent: " + String(wifiStrengthPercent));
+    }
+    String wifiString = "Wifi:" + String(wifiStrengthPercent) + "%";
     const char *wifiChar = wifiString.c_str();
     display.getTextBounds((char*)wifiChar, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(displayWidth()-w-xOffset,yPos);
     minX = min(displayWidth()-w-xOffset,minX);
     display.print((char*)wifiChar);
-    yPos = yPos - h - 1;
+    yPos = yPos - h - verticalSpace;
 
     //Serial.println("minX,yPos = " + String(minX) + "," + String(yPos)); // minX,yPos = 192,67
     display.updateWindow(minX, yPos, displayWidth()-minX, displayHeight()-yPos, true);

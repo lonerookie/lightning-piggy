@@ -1,4 +1,4 @@
-String currentVersion = "1.7.2";
+String currentVersion = "1.7.3";
 String newVersion = ""; // used by the update checker
 
 #ifdef LILYGO_T5_V266
