@@ -89,9 +89,7 @@ int getQrCodeVersion(String qrData) {
 int getQrCodePixelSize(int qrCodeVersion) {
   Serial.println("getQrCodePixelSize for qrCodeVersion " + String(qrCodeVersion));
   
-  int qrDisplayHeight = displayHeight() - 20; // qr code height in pixels
   // Using https://github.com/ricmoo/QRCode#data-capacities
-
   // Get the QR code size (blocks not pixels)
   int qrCodeHeight = 0;
   switch(qrCodeVersion) {
@@ -132,11 +130,11 @@ int getQrCodePixelSize(int qrCodeVersion) {
       qrCodeHeight = 129;
       break;
   }
-  int pixelHeight = floor(qrDisplayHeight / qrCodeHeight);
+  int pixelHeight = floor(displayHeight() / qrCodeHeight);
   Serial.println("qrCodeHeight pixel height is: " + String(qrCodeHeight));
   Serial.println("Calced pixel height is: " + String(pixelHeight));
 
-  // QR codes of height 1 are still scannable, but height 2 seems to be a safe "easy scan" value.
+  // QR codes of height 1 are still scan-able, but height 2 seems to be a safe "easy scan" value.
   // Return the minimal pixelHeight possible, to take up the least amount of space on the display:
   return min(pixelHeight,2);
 }
