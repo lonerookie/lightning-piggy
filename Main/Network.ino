@@ -15,7 +15,9 @@ void connectWifi() {
 
 void disconnectWifi() {
   WiFi.disconnect(true);
+  delay(1000);
   WiFi.mode(WIFI_OFF);
+  delay(500);
 }
 
 bool wifiConnected() {
