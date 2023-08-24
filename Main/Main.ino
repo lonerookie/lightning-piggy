@@ -1,41 +1,12 @@
-// Code for the Lightning Piggy running on the TTGO LilyGo 2.66 inch ePaper (296X152) hardware.
-// https://www.lightningpiggy.com/
-//
-// Tested with:
-// ============
-// Arduino IDE version 1.8.13
-// ESP32 Board Support version 2.0.6
-// Preferences -> Compiler warnings: Default
-// Tools -> Board -> ESP32 Arduino -> ESP32 Dev Module
-// Tools -> Upload Speed: 921600
-// Tools -> CPU Frequency: 240Mhz
-// Tools -> Flash Frequency: 80Mhz
-// Tools -> Flash Mode: QIO
-// Tools -> Flash Size: 4MB (32Mb)
-// Tools -> Partition Scheme: Default 4MB with spiffs (1.2MB APP, 1.5MB SPIFFS)
-// Tools -> Core Debug Level: Warn
-// Tools -> PSRAM: Disabled
-// Tools -> Port: /dev/ttyACM0
-//
-// Make sure the Arduino IDE has permissions to access the serial port.
-// Hint: sudo chmod -f 777 /dev/ttyACM* /dev/ttyUSB*
-//
-// On the lnbits webpage:
-// - activate the LNURLp extension
-// - click on the LNURLp extension
-// - click "NEW PAY LINK"
-// - untick "fixed amount"
-// - set minimum amount: 1
-// - set maximum amount: 100000000
-// - set currency to "satoshis"
-// - click "Advanced options"
-// - set "Comment maximum characters" to 128
-// - set "Webhook URL" to https://p.lightningpiggy.com/ (optional, for anonymous usage metrics)
-// - set a "Success message", like: Thanks for sending sats to my piggy
+// Code for the Lightning Piggy running on the TTGO LilyGo 2.13 and 2.66 inch ePaper hardware.
+// See README.md for tips and tricks.
 
-#define LILYGO_T5_V266
-// For 2.13 inch LilyGo, uncomment LILYGO_T5_V266 above and comment in LILYGO_T5_V213 below:
-//#define LILYGO_T5_V213
+// For 2.13 inch LilyGo ePaper:
+#define LILYGO_T5_V213
+
+// For 2.66 inch LilyGo ePaper (end of life), uncomment the LILYGO_T5_V266 line below and comment out the LILYGO_T5_V213 line above.
+//#define LILYGO_T5_V266
+
 #include <boards.h>
 
 #include "logos.h"
@@ -43,10 +14,12 @@
 
 // Display stuff:
 #include <GxEPD.h>
-#include <GxDEPG0266BN/GxDEPG0266BN.h>    // 2.66" black/white ePaper display by DKE GROUP
-// For 2.13 inch LilyGo, uncomment GxDEPG0266BN.h above and comment in GxDEPG0213BN (or GxGDEM0213B74) below:
-//#include <GxDEPG0213BN/GxDEPG0213BN.h>    // 2.13" black/white ePaper display by DKE GROUP
+#ifdef LILYGO_T5_V266
+  #include <GxDEPG0266BN/GxDEPG0266BN.h>    // 2.66" black/white ePaper display by DKE GROUP
+#elif defined LILYGO_T5_V213
+  #include <GxDEPG0213BN/GxDEPG0213BN.h>    // 2.13" black/white ePaper display by DKE GROUP
 //#include <GxGDEM0213B74/GxGDEM0213B74.h>  // 2.13" black/white ePaper display by GoodDisplay with 2 additional gray levels
+#endif
 #include <GxIO/GxIO_SPI/GxIO_SPI.h>
 #include <GxIO/GxIO.h>
 
@@ -86,7 +59,7 @@ void setup() {
     display.updateWindow(logowidthcentered, 0, logowidth, logoheight, true);
 
     #ifndef DEBUG
-    displayFit("Connecting to " + String(ssid), 0, logoheight, displayWidth(), displayHeight(), 2);
+    displayFit("Connecting to " + String(ssid) + "...", 0, logoheight, displayWidth(), displayHeight(), 2);
     connectWifi();
     #endif
 
@@ -94,16 +67,17 @@ void setup() {
     logowidthcentered = (((displayWidth() / 2) - logowidth) / 2) + (displayWidth() / 2);
     display.drawBitmap(epd_bitmap_Bitcoin, logowidthcentered, 0, logowidth, logoheight, GxEPD_WHITE);
     display.updateWindow(logowidthcentered, 0, logowidth, logoheight, true);
-
-    // unused for now:
-    // setup_temperature_sensor();
 }
 
 
 void loop() {
     int balance = getWalletBalance();
+
+    // erase the previous screen (bootup with logos)
     display.fillRect(0, 0, displayWidth(), displayHeight(), GxEPD_WHITE);
     display.updateWindow(0, 0, displayWidth(), displayHeight(), true);
+
+    // build the new screen:
     int yAfterBalance = printBalance(balance);
 
     displayHealthAndStatus();
