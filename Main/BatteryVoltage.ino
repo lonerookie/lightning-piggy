@@ -1,5 +1,3 @@
-extern float readTemp1(bool);
-
 double getBatteryVoltage() {
     // read and print battery level
     int totalLevel = 0;
