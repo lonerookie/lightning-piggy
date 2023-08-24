@@ -142,7 +142,7 @@ int displayFit(String paymentDetail, int startX, int startY, int endX, int endY,
 
     // Check if the entire text fit:
     if (yPos <= endY) {
-      Serial.println("yPos (" + yPos + ") <= endY (" + endY + ") so fontSize " + String(fontSize) + " fits!");
+      Serial.println("yPos (" + String(yPos) + ") <= endY (" + String(endY) + ") so fontSize " + String(fontSize) + " fits!");
       break; // exit the fontSize loop because it fits
     } else {
       //Serial.println("fontSize " + String(fontSize) + " did not fit so trying smaller...");
