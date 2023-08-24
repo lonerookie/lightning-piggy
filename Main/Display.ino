@@ -106,6 +106,8 @@ int displayFit(String paymentDetail, int startX, int startY, int endX, int endY,
   if (endY >= displayHeight()) {
     endY = displayHeight() - 1;
   }
+
+  int spaceBetweenLines = 1;
   int yPos;
 
   while (fontSize > 0) {
@@ -133,20 +135,20 @@ int displayFit(String paymentDetail, int startX, int startY, int endX, int endY,
       display.print(textLine);
 
       textPos += chars;
-      yPos += h + 1;
+      yPos += h + spaceBetweenLines;
     }
+    yPos -= spaceBetweenLines; // remove the last space between lines
     //Serial.println("After writing the paymentDetail, yPos = " + String(yPos) + " while endY = " + String(endY));
 
     // Check if the entire text fit:
     if (yPos <= endY) {
-      Serial.println("yPos < endY so fontSize " + String(fontSize) + " fits!");
+      Serial.println("yPos (" + yPos + ") <= endY (" + endY + ") so fontSize " + String(fontSize) + " fits!");
       break; // exit the fontSize loop because it fits
     } else {
       //Serial.println("fontSize " + String(fontSize) + " did not fit so trying smaller...");
       fontSize--;
     }
   }
-  Serial.println("After fontSize loop, yPos = " + String(yPos));
   display.updateWindow(startX, startY, endX-startX+1, endY-startY+1, true);
   return yPos;
 }
