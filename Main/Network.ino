@@ -13,6 +13,11 @@ void connectWifi() {
   Serial.println(WiFi.localIP());
 }
 
+void disconnectWifi() {
+  WiFi.disconnect(true);
+  WiFi.mode(WIFI_OFF);
+}
+
 bool wifiConnected() {
   return (WiFi.status() == WL_CONNECTED);
 }
@@ -61,8 +66,7 @@ String getEndpointData(const char * host, String endpointUrl) {
   WiFiClientSecure client;
   client.setInsecure(); // see https://github.com/espressif/arduino-esp32/blob/master/libraries/WiFiClientSecure/README.md
 
-  if (!client.connect(host, 443))
-  {
+  if (!client.connect(host, 443)) {
     Serial.println("Server down");
     setFont(2);
     printTextCentered((char*)String("No internet :-(").c_str());

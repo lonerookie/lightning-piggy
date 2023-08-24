@@ -89,9 +89,12 @@ void print_GPIO_wake_up(){
 
 
 void hibernate(int sleepTimeSeconds) {
+  Serial.println("Going to sleep for " + String(sleepTimeSeconds) + " seconds...");
+
+  // Disconnect wifi cleanly because some access points will refuse reconnections if this is forgotten...
+  disconnectWifi();
+
   uint64_t deepSleepTime = (uint64_t)sleepTimeSeconds * (uint64_t)1000 * (uint64_t)1000;
-  Serial.println("Going to sleep for seconds");
-  Serial.println(sleepTimeSeconds);
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON); // RTC peripherals needs to stay on for GPIO32's pulldown to work
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
