@@ -55,6 +55,10 @@ void setup() {
     showLogo(piggyLogo, 104, 104, ((displayWidth() / 2) - 104) / 2, 0);
 
     displayFit("Connecting to " + String(ssid) + "...", 0, 103, displayWidth(), displayHeight(), 2); // somehow 104 causes yPos 120 and that causes the last line to be cut off
+    #ifdef LILYGO_T5_V266
+    display.update();
+    #endif
+
     #ifndef DEBUG
     connectWifi();
     #endif
@@ -67,9 +71,15 @@ void setup() {
 void loop() {
     int balance = getWalletBalance();
 
+    #ifdef LILYGO_T5_V266
+    display.fillScreen(GxEPD_WHITE); // erase entire display, otherwise old stuff might still be (faintly) there
+    display.updateWindow(0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, false); // seems needed to avoid artifacts later on when doing partial draws
+    #else
     // erase the previous screen (bootup with logos)
     display.fillRect(0, 0, displayWidth(), displayHeight(), GxEPD_WHITE);
+    // TODO: try this: display.fillScreen(GxEPD_WHITE); // erase entire display, otherwise old stuff might still be (faintly) there
     display.updateWindow(0, 0, displayWidth(), displayHeight(), true);
+    #endif
 
     // build the new screen:
     int yAfterBalance = printBalance(balance);
@@ -91,6 +101,10 @@ void loop() {
     displayVoltageWarning();
 
     if (wifiConnected()) checkShowUpdateAvailable();
+
+    #ifdef LILYGO_T5_V266
+    display.update();
+    #endif
 
     hibernate(6 * 60 * 60);
 }
