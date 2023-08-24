@@ -96,7 +96,7 @@ int fitMaxText(String text, int maxWidth) {
   return maxLength;
 }
 
-// Try to fit a String into a rectangle.
+// Try to fit a String into a rectangle, including the borders.
 // returns: the y position after fitting the text
 int displayFit(String paymentDetail, int startX, int startY, int endX, int endY, int fontSize) {
   // Don't go past the end of the display and remember pixels start from zero, so [0,max-1]
@@ -112,7 +112,7 @@ int displayFit(String paymentDetail, int startX, int startY, int endX, int endY,
     setFont(fontSize);
 
     // empty the entire rectangle
-    display.fillRect(startX, startY, endX-startX, endY-startY, GxEPD_WHITE);
+    display.fillRect(startX, startY, endX-startX+1, endY-startY+1, GxEPD_WHITE);
 
     yPos = startY;
     int textPos = 0;
@@ -138,7 +138,7 @@ int displayFit(String paymentDetail, int startX, int startY, int endX, int endY,
     //Serial.println("After writing the paymentDetail, yPos = " + String(yPos) + " while endY = " + String(endY));
 
     // Check if the entire text fit:
-    if (yPos < endY) {
+    if (yPos <= endY) {
       Serial.println("yPos < endY so fontSize " + String(fontSize) + " fits!");
       break; // exit the fontSize loop because it fits
     } else {
@@ -147,7 +147,7 @@ int displayFit(String paymentDetail, int startX, int startY, int endX, int endY,
     }
   }
   Serial.println("After fontSize loop, yPos = " + String(yPos));
-  display.updateWindow(startX, startY, endX-startX, endY-startY, true);
+  display.updateWindow(startX, startY, endX-startX+1, endY-startY+1, true);
   return yPos;
 }
 
