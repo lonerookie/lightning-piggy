@@ -103,7 +103,7 @@ void displayHealthAndStatus() {
     yPos = yPos - h - verticalSpace;
 
     //Serial.println("minX,yPos = " + String(minX) + "," + String(yPos)); // minX,yPos = 192,67
-    display.updateWindow(minX, yPos, displayWidth()-minX, displayHeight()-yPos, true);
+    updateWindow(minX, yPos, displayWidth()-minX, displayHeight()-yPos);
 }
 
 // returns true if voltage is low, false otherwise
@@ -122,7 +122,7 @@ bool displayVoltageWarning() {
       display.fillRect(x1, y1-4, w+4, h+4, GxEPD_BLACK);
       display.setTextColor(GxEPD_WHITE);
       display.print((char*)lowBatChar);
-      display.updateWindow(x1, y1-4, w+4, h+4, true);
+      updateWindow(x1, y1-4, w+4, h+4);
       display.setTextColor(GxEPD_BLACK);
       return true;
     } else {

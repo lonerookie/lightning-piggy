@@ -28,6 +28,15 @@ int displayWidth() {
   return GxEPD_HEIGHT; // width and height are swapped because display is rotated
 }
 
+void updateWindow(int x, int y, int w, int h) {
+  #ifdef LILYGO_T5_V266
+  display.updateWindow(0, 0, displayHeight(), displayWidth(), false); // on the 2.66 there's an issue with partial updates and rotation=true
+  #else
+  display.updateWindow(x, y, w, h, true);
+  #endif
+
+}
+
 // size 0 = smallest font (8pt)
 // size 1 = 12pt
 // size 2 = 18pt
@@ -149,7 +158,9 @@ int displayFit(String paymentDetail, int startX, int startY, int endX, int endY,
       fontSize--;
     }
   }
-  display.updateWindow(startX, startY, endX-startX+1, endY-startY+1, true);
+
+  updateWindow(startX, startY, endX-startX+1, endY-startY+1);
+
   return yPos;
 }
 
@@ -166,7 +177,7 @@ int printBalance(int balance) {
     Serial.println("Got balance text bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h)); // typical value for Lato_Medium_26: 1,-19,118,20
     display.setCursor(1, h);
     display.print(walletBalanceText);
-    display.updateWindow(0,0,w+2,h+5,true); // for some mysterious reason, this needs a bit of extra margin around the text (2,5) instead of (1,0)
+    updateWindow(0,0,w+2,h+5); // for some mysterious reason, this needs a bit of extra margin around the text (2,5) instead of (1,0)
     return h;
 }
 
@@ -192,5 +203,5 @@ void printTextCenteredX(String str, uint16_t yPos) {
 
 void showLogo(const unsigned char logo [], int sizeX, int sizeY, int posX, int posY) {
   display.drawBitmap(logo, posX, posY, sizeX, sizeY, GxEPD_WHITE);
-  display.updateWindow(posX, posY, sizeX, sizeY, true);
+  updateWindow(posX, posY, sizeX, sizeY);
 }

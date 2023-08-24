@@ -34,7 +34,7 @@ int showLNURLpQR(String qrData) {
       }
     }
   }
-  display.updateWindow(qrPosX,qrPosY,qrSideSize,qrSideSize,true);
+  updateWindow(qrPosX,qrPosY,qrSideSize,qrSideSize);
 
   return qrPosX;
 }
