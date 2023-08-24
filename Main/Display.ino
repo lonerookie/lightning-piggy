@@ -128,14 +128,14 @@ int displayFit(String paymentDetail, int startX, int startY, int endX, int endY,
       textPos += chars;
       yPos += h + 1;
     }
-    Serial.println("After writing the paymentDetail, yPos = " + String(yPos) + " while endY = " + String(endY));
+    //Serial.println("After writing the paymentDetail, yPos = " + String(yPos) + " while endY = " + String(endY));
 
     // Check if the entire text fit:
     if (yPos < endY) {
-      Serial.println("yPos < endY so fontSize " + String(fontSize) + " fits!");
+      //Serial.println("yPos < endY so fontSize " + String(fontSize) + " fits!");
       break; // exit the fontSize loop because it fits
     } else {
-      Serial.println("fontSize " + String(fontSize) + " did not fit so trying smaller...");
+      //Serial.println("fontSize " + String(fontSize) + " did not fit so trying smaller...");
       fontSize--;
     }
   }
