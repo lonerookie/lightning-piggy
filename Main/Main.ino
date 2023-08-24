@@ -52,21 +52,15 @@ void setup() {
     if (displayVoltageWarning()) delay(5000);
 
     // piggy logo indicates board is starting
-    int logoheight = 104;
-    int logowidth = 104;
-    int logowidthcentered = ((displayWidth() / 2) - logowidth) / 2;
-    display.drawBitmap(piggyLogo, logowidthcentered, 0, logowidth, logoheight, GxEPD_WHITE);
-    display.updateWindow(logowidthcentered, 0, logowidth, logoheight, true);
+    showLogo(piggyLogo, 104, 104, ((displayWidth() / 2) - 104) / 2, 0);
 
     #ifndef DEBUG
-    displayFit("Connecting to " + String(ssid) + "...", 0, logoheight, displayWidth(), displayHeight(), 2);
+    displayFit("Connecting to " + String(ssid) + "...", 0, 104, displayWidth(), displayHeight(), 2);
     connectWifi();
     #endif
 
     // bitcoin logo indicates wifi is connected
-    logowidthcentered = (((displayWidth() / 2) - logowidth) / 2) + (displayWidth() / 2);
-    display.drawBitmap(epd_bitmap_Bitcoin, logowidthcentered, 0, logowidth, logoheight, GxEPD_WHITE);
-    display.updateWindow(logowidthcentered, 0, logowidth, logoheight, true);
+    showLogo(epd_bitmap_Bitcoin, 104, 104, (((displayWidth() / 2) - 104) / 2) + (displayWidth() / 2), 0);
 }
 
 

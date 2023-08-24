@@ -180,3 +180,8 @@ void printTextCenteredX(String str, uint16_t yPos) {
     display.setCursor(displayWidth() / 2 - w / 2, yPos );
     display.print(str);
 }
+
+void showLogo(const unsigned char logo [], int sizeX, int sizeY, int posX, int posY) {
+  display.drawBitmap(logo, posX, posY, sizeX, sizeY, GxEPD_WHITE);
+  display.updateWindow(posX, posY, sizeX, sizeY, true);
+}
