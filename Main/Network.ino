@@ -51,10 +51,10 @@ int getStrength(int points){
 
  */
 int strengthPercent(float strength) {
-  // ESP32 returns RSSI above 0 somethings but not when doing 10 reads...
-  // 0 = 100% and -90 = 0%
-  //return (90 + strength) * 1.09;
-  return 100 + strength;
+  int strengthPercent = 100 + strength;
+  // ESP32 returns RSSI above 0 sometimes, so limit to 99% max:
+  if (strengthPercent >= 100) strengthPercent = 99;
+  return strengthPercent;
 }
 
 /**
