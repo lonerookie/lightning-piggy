@@ -1,16 +1,31 @@
+
+// Returns the VBAT value.
+// If we're not on battery but USB powered, then it returns a negative VBAT value.
 double getBatteryVoltage() {
-    // read and print battery level
-    int totalLevel = 0;
-    // read multiple times to get an average value
-    for (int multiread=0; multiread<3; multiread++) {
-      totalLevel += analogRead(35);
+    const int nrReads = 4;
+
+    int totalDiff = 0;
+
+    int prevValue = analogRead(35); delay(10);
+    int totalLevel = prevValue;
+
+    for (int multiread=0; multiread<nrReads; multiread++) {
+      int value = analogRead(35);
+      totalLevel += value;
+      totalDiff += abs(value - prevValue);
       delay(100);
     }
 
-    totalLevel = totalLevel / 3;
+    totalLevel = totalLevel / (nrReads+1); // one additional read is done for the prevValue
+    totalDiff = totalDiff / nrReads;
     Serial.println("Average battery level: " + String(totalLevel));
+    Serial.println("Average battery level diff: " + String(totalDiff));
 
     double voltage = (totalLevel * 1.72) / 1000;
+    if (totalDiff > 32) {
+      // The battery has a smoothing effect so lots of variance between levels means we're not on battery.
+      voltage *= -1;
+    }
     //return 3.7; // for testing low battery situation
     return voltage;
 }
@@ -36,8 +51,10 @@ void displayHealthAndStatus() {
     */
 
     double voltage = getBatteryVoltage();
-    String voltageString(voltage, 2);
-    voltageString += "V";
+    String voltageString = "NOBAT";
+    if (voltage > 0) {
+      voltageString = String(voltage, 2) + "V";
+    }
     const char *voltageChar = voltageString.c_str();
     display.getTextBounds((char*)voltageChar, 0, 0, &x1, &y1, &w, &h);
     display.setCursor(displayWidth()-w-xOffset,yPos);
@@ -95,7 +112,7 @@ bool displayVoltageWarning() {
     uint16_t w, h;
     double voltage = getBatteryVoltage();
     // Print big fat warning on top of everything if low battery
-    if (voltage < 3.8) {
+    if (voltage > 0 && voltage < 3.8) {
       setFont(2);
       String lowBatString = " ! LOW BATTERY (" + String(voltage) + "V) ! ";
       const char * lowBatChar = lowBatString.c_str();
