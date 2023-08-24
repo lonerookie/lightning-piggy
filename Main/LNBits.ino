@@ -109,56 +109,15 @@ void getLNURLPayments(int limit, int maxX, int startY) {
         }
 
         // Display the message
-        int fontSize = 3; // first try the biggest font, then go smaller
-        uint16_t savedYPos = yPos; // save yPos so it can be restored
-
         // If not enough space is available (because the first message took it all) then claw it back
-        if (savedYPos > displayHeight() * 0.8) {
+        if (yPos > displayHeight() * 0.8) {
           Serial.println("Not enough vertical space is provided, taking it...");
-          savedYPos = displayHeight() * 0.8;
-          Serial.println("savedYPos = " + String(savedYPos));
+          yPos = displayHeight() * 0.8;
+          Serial.println("yPos = " + String(yPos));
         }
 
-        while (fontSize > 0) {
-          setFont(fontSize);
-          yPos = savedYPos;
-          display.fillRect(0, yPos, maxX, displayHeight(), GxEPD_WHITE);
-
-          // display the entire text
-          int textPos = 0;
-          while (textPos < paymentDetail.length()) {
-            // Try to fit everything that still needs displaying:
-            String paymentDetailWithoutAlreadyPrintedPart = paymentDetail.substring(textPos);
-            int chars = fitMaxText(paymentDetailWithoutAlreadyPrintedPart, maxX);
-
-            // Print the text that fits:
-            String textLine = paymentDetail.substring(textPos, textPos+chars);
-            //Serial.println("first line that fits: " + textLine);
-
-            int16_t x1, y1;
-            uint16_t w, h;
-            display.getTextBounds(textLine, 0, 0, &x1, &y1, &w, &h);
-            //Serial.println("getTextBounds of textLine: " + String(x1) + "," + String(y1) + ","+ String(w) + ","+ String(h));
-            display.setCursor(0, yPos + h); // bottom of the line
-            display.print(textLine);
-
-            textPos += chars;
-            yPos += h + 1;
-          }
-          //Serial.println("After writing the paymentDetail, yPos = " + String(yPos) + " while displayHeight = " + String(displayHeight()));
-
-          // Check if the entire text fit:
-          if (yPos < displayHeight()) {
-            Serial.println("yPos < displayHeight so fontSize " + String(fontSize) + " fits!");
-            break; // exit the fontSize loop because it fits
-          } else {
-            Serial.println("fontSize " + String(fontSize) + " did not fit so trying smaller...");
-            fontSize--;
-          }
-        }
-        //Serial.println("After fontSize loop, yPos = " + String(yPos));
-
-        yPos += 2;
+        yPos = displayFit(paymentDetail, 0, yPos, maxX, displayHeight(), 3);
+        yPos += 2; // leave some margin between the comments
       } else {
         Serial.println("Skipping because extra tag is not lnurlp...");
       }
@@ -166,7 +125,6 @@ void getLNURLPayments(int limit, int maxX, int startY) {
       Serial.println("Skipping because no extra or no extra tag or still pending...");
     }
   }
-  display.updateWindow(0, startY, maxX, displayHeight()-startY, true);
 }
 
 /**

@@ -96,6 +96,54 @@ int fitMaxText(String text, int maxWidth) {
   return maxLength;
 }
 
+// Try to fit a String into a rectangle.
+// returns: the y position after fitting the text
+int displayFit(String paymentDetail, int startX, int startY, int endX, int endY, int fontSize) {
+  int yPos;
+
+  while (fontSize > 0) {
+    setFont(fontSize);
+
+    // empty the entire rectangle
+    display.fillRect(startX, startY, endX-startX, endY-startY, GxEPD_WHITE);
+
+    yPos = startY;
+    int textPos = 0;
+    while (textPos < paymentDetail.length()) {
+      // Try to fit everything that still needs displaying:
+      String paymentDetailWithoutAlreadyPrintedPart = paymentDetail.substring(textPos);
+      int chars = fitMaxText(paymentDetailWithoutAlreadyPrintedPart, endX);
+
+      // Print the text that fits:
+      String textLine = paymentDetail.substring(textPos, textPos+chars);
+      //Serial.println("first line that fits: " + textLine);
+
+      int16_t x1, y1;
+      uint16_t w, h;
+      display.getTextBounds(textLine, 0, 0, &x1, &y1, &w, &h);
+      //Serial.println("getTextBounds of textLine: " + String(x1) + "," + String(y1) + ","+ String(w) + ","+ String(h));
+      display.setCursor(0, yPos + h); // bottom of the line
+      display.print(textLine);
+
+      textPos += chars;
+      yPos += h + 1;
+    }
+    Serial.println("After writing the paymentDetail, yPos = " + String(yPos) + " while endY = " + String(endY));
+
+    // Check if the entire text fit:
+    if (yPos < endY) {
+      Serial.println("yPos < endY so fontSize " + String(fontSize) + " fits!");
+      break; // exit the fontSize loop because it fits
+    } else {
+      Serial.println("fontSize " + String(fontSize) + " did not fit so trying smaller...");
+      fontSize--;
+    }
+  }
+  Serial.println("After fontSize loop, yPos = " + String(yPos));
+  display.updateWindow(startX, startY, endX-startX, endY-startY, true);
+  return yPos;
+}
+
 /*
  * returns: vertical cursor after printing balance
  */
@@ -112,6 +160,7 @@ int printBalance(int balance) {
     display.updateWindow(0,0,w+2,h+5,true); // for some mysterious reason, this needs a bit of extra margin around the text (2,5) instead of (1,0)
     return h;
 }
+
 
 void printTextCentered(char* str) {
     int16_t x1, y1;
