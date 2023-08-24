@@ -78,24 +78,22 @@ void setup() {
     // allow some time to show low battery warning
     if (displayVoltageWarning()) delay(5000);
 
-    #ifndef DEBUG
-
     // piggy logo indicates board is starting
     int logoheight = 104;
     int logowidth = 104;
-    int logoheightcentered = (displayHeight() - logoheight) / 2;
     int logowidthcentered = ((displayWidth() / 2) - logowidth) / 2;
-    display.drawBitmap(piggyLogo, logowidthcentered, logoheightcentered, logowidth, logoheight, GxEPD_WHITE);
-    display.updateWindow(logowidthcentered, logoheightcentered, logowidth, logoheight, true);
+    display.drawBitmap(piggyLogo, logowidthcentered, 0, logowidth, logoheight, GxEPD_WHITE);
+    display.updateWindow(logowidthcentered, 0, logowidth, logoheight, true);
 
+    #ifndef DEBUG
+    displayFit("Connecting to " + String(ssid), 0, logoheight, displayWidth(), displayHeight(), 2);
     connectWifi();
+    #endif
 
     // bitcoin logo indicates wifi is connected
     logowidthcentered = (((displayWidth() / 2) - logowidth) / 2) + (displayWidth() / 2);
-    display.drawBitmap(epd_bitmap_Bitcoin, logowidthcentered, logoheightcentered, logowidth, logoheight, GxEPD_WHITE);
-    display.updateWindow(logowidthcentered, logoheightcentered, logowidth, logoheight, true);
-
-    #endif
+    display.drawBitmap(epd_bitmap_Bitcoin, logowidthcentered, 0, logowidth, logoheight, GxEPD_WHITE);
+    display.updateWindow(logowidthcentered, 0, logowidth, logoheight, true);
 
     // unused for now:
     // setup_temperature_sensor();
