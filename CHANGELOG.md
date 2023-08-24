@@ -9,7 +9,7 @@
 - Cleanly disconnect wifi before hibernate
 
 **1.7.1**
-- Show "Connecting to <SSID>..." at startup
+- Show "Connecting to SSIDNAME..." at startup
 
 **1.7.0**
 - Show wifi signal strength (%)
