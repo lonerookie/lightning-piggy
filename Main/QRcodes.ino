@@ -134,6 +134,11 @@ int getQrCodePixelSize(int qrCodeVersion) {
   Serial.println("qrCodeHeight pixel height is: " + String(qrCodeHeight));
   Serial.println("Calced pixel height is: " + String(pixelHeight));
 
+  if (displayWidth()>250) {
+    // On big displays, make the QR code 50% bigger, for esthetics.
+    return min(pixelHeight,3);
+  }
+
   // QR codes of height 1 are still scan-able, but height 2 seems to be a safe "easy scan" value.
   // Return the minimal pixelHeight possible, to take up the least amount of space on the display:
   return min(pixelHeight,2);
