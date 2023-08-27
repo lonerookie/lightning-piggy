@@ -1,3 +1,7 @@
+**1.8.1**
+- Workaround partial display refresh on GDEM displays
+- Make QR code a bit bigger on big displays
+
 **1.8.0**
 - Ensure compatibility with both 2.13 and 2.66 inch ePaper DEPG
 
