@@ -30,11 +30,14 @@ int displayWidth() {
 
 void updateWindow(int x, int y, int w, int h) {
   #ifdef LILYGO_T5_V266
-  display.updateWindow(0, 0, displayHeight(), displayWidth(), false); // on the 2.66 there's an issue with partial updates and rotation=true
+    Serial.println("Workaround for Lilygo 2.66 inch: update entire window without rotation!");
+    display.updateWindow(0, 0, displayHeight(), displayWidth(), false); // on the 2.66 there's an issue with partial updates and rotation=true
+  #elif defined _GxGDEM0213B74_H_
+    Serial.println("Workaround for GDEM0213B74 display: full refresh instead of partial!");
+    display.update();
   #else
-  display.updateWindow(x, y, w, h, true);
+    display.updateWindow(x, y, w, h, true);
   #endif
-
 }
 
 // size 0 = smallest font (8pt)
