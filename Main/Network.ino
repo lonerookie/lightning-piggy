@@ -63,7 +63,7 @@ int strengthPercent(float strength) {
  * @param endpointUrl 
  * @return String 
  */
-String getEndpointData(const char * host, String endpointUrl) {
+String getEndpointData(const char * host, String endpointUrl, bool sendApiKey) {
   Serial.println("Fetching URL: " + endpointUrl);
   WiFiClientSecure client;
   client.setInsecure(); // see https://github.com/espressif/arduino-esp32/blob/master/libraries/WiFiClientSecure/README.md
@@ -75,12 +75,13 @@ String getEndpointData(const char * host, String endpointUrl) {
     hibernate(30 * 60);
   }
 
-  const String request = String("GET ") + endpointUrl + " HTTP/1.1\r\n" +
-               "Host: " + host + "\r\n" +
+  String request = "GET " + endpointUrl + " HTTP/1.1\r\n" +
+               "Host: " + String(host) + "\r\n" +
                "User-Agent: " + getFullVersion() + "\r\n" +
-               "X-Api-Key: " + invoiceKey + " \r\n" +
                "Content-Type: application/json\r\n" +
-               "Connection: close\r\n\r\n";
+               "Connection: close\r\n";
+  if (sendApiKey) request += "X-Api-Key: " + String(invoiceKey) + "\r\n";
+  request += "\r\n";
 
   client.print(request);
 

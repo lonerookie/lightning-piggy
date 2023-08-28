@@ -8,7 +8,7 @@ int getWalletBalance() {
   return 12345678;
   #endif
 
-  const String line = getEndpointData(lnbitsHost, url);
+  const String line = getEndpointData(lnbitsHost, url, true);
   DynamicJsonDocument doc(4096); // 4096 bytes is plenty for just the wallet details (id, name and balance info)
 
   DeserializationError error = deserializeJson(doc, line);
@@ -62,7 +62,7 @@ void getLNURLPayments(int limit, int maxX, int startY) {
   // one with comment, one without comment, both with webhook:
   // const String line = "[{\"checking_id\":\"30f89c969d07b1e9851911320e16dca655b2805aac5091978091228f7dc80dc0\",\"pending\":false,\"amount\":1000,\"fee\":0,\"memo\":\"piggytest\",\"time\":1692453842,\"bolt11\":\"lnbc10n1pjwpj7jsp5ng25uynapv0zggf3en87gx07nmd0fa3prp7d0ms7mdhgw7yvjp5spp5xrufe95aq7c7npgezyequ9ku5e2m9qz643gfr9uqjy3g7lwgphqqhp5gxwncgtpe3jmwprje9eyysh7ap0xe2ez8uy59s436xftc9vd0cdqxqzjccqpjrzjqf0wqzupw7dv2pt4f4fl4c2xkw6h0ctg8j95ax0vp3k0h38n7a7sgrpvq5qqzwgqqyqqqqlgqqqqp9sq2q9qxpqysgqzuzj2dctaz4knqqq32tjzdn943p5zphtexk04mhnyx2v2ysyazxq59vmdelsh79k8jtd7wez09y4zv33zlehlfj9jpperf9d8tnmm0gqrjrdhz\",\"preimage\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"payment_hash\":\"30f89c969d07b1e9851911320e16dca655b2805aac5091978091228f7dc80dc0\",\"expiry\":1692454442.0,\"extra\":{\"tag\":\"lnurlp\",\"link\":\"5cvU6X\",\"extra\":\"1000\",\"comment\":[\"Long comments are great for testing! BIG ones and small ones. Let's see how it gets displayed! Even if it is super long, it should still somehow show up.\"],\"wh_status\":200,\"wh_success\":true,\"wh_message\":\"OK\",\"wh_response\":\"POK\"},\"wallet_id\":\"5d59feaf97554bcd872c2bd686891d9e\",\"webhook\":null,\"webhook_status\":null},{\"checking_id\":\"8d8f9b6c959ffab9a1cb5f6505a307c5e1df0e4e880b260af1109817a03ea3b4\",\"pending\":false,\"amount\":1000,\"fee\":0,\"memo\":\"piggytest\",\"time\":1692456573,\"bolt11\":\"lnbc10n1pjwp4nasp5wdc2c3xh2ytvamgnnl82ujywg7v4gvk86yymzzep24kx3wp03mgqpp53k8ekmy4nlatngwttajstgc8chsa7rjw3q9jvzh3zzvp0gp75w6qhp5gxwncgtpe3jmwprje9eyysh7ap0xe2ez8uy59s436xftc9vd0cdqxqzjccqpjrzjqtxlgn2nt3cqqlmej5nqc89ua89d6hdrrtc8dvslgtc4agauknv2wzlytyqqy4gqqyqqqqqqqqqqxxcpyq9qxpqysgqqlmez48jpy88tepv6dxj9mqpv8he0vwg93md29y4g8neqs8cta7k38e3e43hdlrjsfd5lf4axp03fahkry7w9wtrp0cy43udqvrdepqqt4u9xg\",\"preimage\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"payment_hash\":\"8d8f9b6c959ffab9a1cb5f6505a307c5e1df0e4e880b260af1109817a03ea3b4\",\"expiry\":1692457173.0,\"extra\":{\"tag\":\"lnurlp\",\"link\":\"5cvU6X\",\"extra\":\"1000\",\"wh_status\":200,\"wh_success\":true,\"wh_message\":\"OK\",\"wh_response\":\"POK\"},\"wallet_id\":\"5d59feaf97554bcd872c2bd686891d9e\",\"webhook\":null,\"webhook_status\":null}]";
   #else
-  const String line = getEndpointData(lnbitsHost, url);
+  const String line = getEndpointData(lnbitsHost, url, true);
   #endif
 
   Serial.println("Got payments: " + line);
@@ -141,7 +141,7 @@ String getLNURLp() {
   #endif
 
   // Get the first lnurlp
-  String lnurlpData = getEndpointData(lnbitsHost, "/lnurlp/api/v1/links");
+  String lnurlpData = getEndpointData(lnbitsHost, "/lnurlp/api/v1/links", true);
   DynamicJsonDocument doc(8192); // the size of the list of links is unknown so don't skimp here
 
   DeserializationError error = deserializeJson(doc, lnurlpData);

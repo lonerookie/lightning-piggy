@@ -68,7 +68,7 @@ String getFullVersion() {
  */
 String checkNewVersion() {
   Serial.print("Checking for updates: ");
-  return getEndpointData(checkUpdateHost, "/");
+  return getEndpointData(checkUpdateHost, "/", false);
 }
 
 void showUpdateAvailable() {
