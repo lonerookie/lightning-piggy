@@ -2,6 +2,7 @@
 // for faster startup and testing of display code etc.
 //
 //#define DEBUG
+#include "Constants.h"
 
 // These values get replaced with the user provided values by the Web Serial Installer for Lightning Piggy.
 // But you can also replace them manually yourself here if you don't plan on using the Web Installer.
@@ -13,4 +14,8 @@ const char* invoiceKey = "REPLACETHISBYLNBITSKEY_REPLACETHISBYLNBITSKEY_REPLACET
 
 // Regular configuration values
 const char* checkUpdateHost = "m.lightningpiggy.com";
+
+const int sleepTimeMinutes = 2;
+
+const int btcPriceCurrency = CURRENCY_DKK;
 

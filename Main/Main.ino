@@ -30,6 +30,8 @@
 #include "Fonts/LatoMedium20pt.h"
 #include "Fonts/LatoMedium26pt.h"
 
+#include "Constants.h"
+
 // Global variables for display
 GxIO_Class io(SPI,  EPD_CS, EPD_DC,  EPD_RSET);
 GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
@@ -49,33 +51,60 @@ void setup() {
     setup_display();
 
     // allow some time to show low battery warning
-    if (displayVoltageWarning()) delay(5000);
+    if (displayVoltageWarning()) {
+       delay(5000);
+    }
+
+    displayFit("Message of the day:", 0, 20, displayWidth(), 40, 1); 
+
+    String slogan = getRandomBootSlogan();
+    Serial.println("slogan " + slogan);
+    displayFit(slogan, 0, 40, displayWidth(), 160, 4); 
+
+    delay(3000);
+
+    // erase the screen 
+    display.fillScreen(GxEPD_WHITE);
+    updateWindow(0, 0, displayWidth(), displayHeight());
+
+    String baseConnectMsg = "Connecting to " + String(ssid) + "...";
+    String connectingMsg = baseConnectMsg + "    ";
+    displayFit(connectingMsg, 0, 1, displayWidth(), 20, 1); // somehow 104 causes yPos 120 and that causes the last line to be cut off
 
     // piggy logo indicates board is starting
-    showLogo(piggyLogo, 104, 104, ((displayWidth() / 2) - 104) / 2, 0);
+    showLogo(piggyLogo, 104, 104, ((displayWidth() / 2) - 104) / 2, 16);
 
-    displayFit("Connecting to " + String(ssid) + "...", 0, 103, displayWidth(), displayHeight(), 2); // somehow 104 causes yPos 120 and that causes the last line to be cut off
+    displayHealthAndStatus();
 
     #ifndef DEBUG
     connectWifi();
     #endif
 
-    // bitcoin logo indicates wifi is connected
-    showLogo(epd_bitmap_Bitcoin, 104, 104, (((displayWidth() / 2) - 104) / 2) + (displayWidth() / 2), 0);
+    String connectedMsg = baseConnectMsg + " OK!";
+    displayFit(connectedMsg, 0, 1, displayWidth(), 20, 1); // somehow 104 causes yPos 120 and that causes the last line to be cut off
+
+    delay(1000);
 }
 
-
-void loop() {
-    int balance = getWalletBalance();
-
-    // erase the previous screen (bootup with logos)
+void loop() {    
+    // erase the setup screen 
     display.fillScreen(GxEPD_WHITE);
     updateWindow(0, 0, displayWidth(), displayHeight());
 
-    // build the new screen:
-    int yAfterBalance = printBalance(balance);
+    showLogo(epd_bitmap_Bitcoin, 55, 55, (displayWidth() / 2) + 71, 67);
 
-    displayHealthAndStatus();
+    int balance = getWalletBalance();
+
+    // build the new screen:
+    int yAfterBalance  = 0;
+    bool balanceOk = balance != NOT_SPECIFIED;
+
+    if (balanceOk) {
+       yAfterBalance = printBalance(balance);
+    }
+    else {
+       displayWarning("GET WALLET ERROR", 30);
+    }
 
     String lnurlp = getLNURLp();
     int xBeforeLNURLp = displayWidth();
@@ -89,9 +118,23 @@ void loop() {
 
     getLNURLPayments(2, xBeforeLNURLp, yAfterBalance);
 
+    float btcPrice = getBitcoinPrice();
+    Serial.println("btcPrice" + String(btcPrice, 2));
+
+    bool btcPriceOk = btcPrice != NOT_SPECIFIED;
+    if (!btcPriceOk) {
+      displayWarning("GET BTC PRICE ERROR", 30);
+    }
+    if (btcPriceOk && balanceOk) {
+        float balanceValue = btcPrice / 100000000 * balance;
+        Serial.println("balanceValue" + String(balanceValue, 2));
+        displayWarning(" " + floatToString(balanceValue, 2) + getCurrentCurrencyCode() + " (" + formatFloatWithSeparator(btcPrice) + ")", displayHeight() - 8);
+    }
+
     displayVoltageWarning();
 
     if (wifiConnected()) checkShowUpdateAvailable();
 
-    hibernate(6 * 60 * 60);
+    int sleepTimeSeconds = sleepTimeMinutes * 60;
+    hibernate(sleepTimeSeconds);
 }
