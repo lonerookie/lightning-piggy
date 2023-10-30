@@ -76,6 +76,9 @@ void print_wakeup_reason(){
     case ESP_SLEEP_WAKEUP_ULP : Serial.println("Wakeup caused by ULP program"); break;
     default : Serial.printf("Wakeup was not caused by deep sleep, wakeup reason: %d\n",wakeup_reason); break;
   }
+
+  int reset_reason = rtc_get_reset_reason(0); 
+  Serial.printf("Reset Reason (%d): ", reset_reason);
 }
 
 /*
