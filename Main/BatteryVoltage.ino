@@ -62,14 +62,6 @@ void displayHealthAndStatus() {
     display.print((char*)voltageChar);
     yPos = yPos - h - verticalSpace;
 
-    String hallString = String(read_internal_hall_sensor(), 2);
-    hallString += "H";
-    const char *hallChar = hallString.c_str();
-    display.getTextBounds((char*)hallChar, 0, 0, &x1, &y1, &w, &h);
-    display.setCursor(displayWidth()-w-xOffset,yPos);
-    minX = min(displayWidth()-w-xOffset,minX);
-    display.print((char*)hallChar);
-    yPos = yPos - h - verticalSpace;
 
     String displayString = getShortDisplayInfo();
     const char *displayChar = displayString.c_str();
