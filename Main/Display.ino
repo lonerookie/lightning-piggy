@@ -208,3 +208,22 @@ void showLogo(const unsigned char logo [], int sizeX, int sizeY, int posX, int p
   display.drawBitmap(logo, posX, posY, sizeX, sizeY, GxEPD_WHITE);
   updateWindow(posX, posY, sizeX, sizeY);
 }
+
+void displayWarning(String text, int y) {
+    Serial.println("Displaying warning: " + text);
+    int16_t x1, y1;
+    uint16_t w, h;
+
+    setFont(2);
+    const char * chars = text.c_str();
+    display.setCursor(1, y);
+    display.getTextBounds((char*)chars, 1, y, &x1, &y1, &w, &h);
+    Serial.println("Got warning bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h));
+    display.fillRect(x1, y1-4, w+8, h+12, GxEPD_BLACK);
+    //display.fillRect(x1, y1-4, w+4, h+4, GxEPD_BLACK);
+    display.setTextColor(GxEPD_WHITE);
+    display.print((char*)chars);
+    updateWindow(x1, y1-4, w+8, h+12);
+    //updateWindow(x1, y1-4, w+4, h+4);
+    display.setTextColor(GxEPD_BLACK);
+}

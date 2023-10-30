@@ -108,22 +108,11 @@ void displayHealthAndStatus() {
 
 // returns true if voltage is low, false otherwise
 bool displayVoltageWarning() {
-    int16_t x1, y1;
-    uint16_t w, h;
     double voltage = getBatteryVoltage();
     // Print big fat warning on top of everything if low battery
     if (voltage > 0 && voltage < 3.8) {
-      setFont(2);
       String lowBatString = " ! LOW BATTERY (" + String(voltage) + "V) ! ";
-      const char * lowBatChar = lowBatString.c_str();
-      display.setCursor(1,displayHeight()-1);
-      display.getTextBounds((char*)lowBatChar, 1, displayHeight()-1, &x1, &y1, &w, &h);
-      Serial.println("Got lowBatChar bounds: " + String(x1) + "," + String(y1) + ","+ String(w) + "," + String(h));
-      display.fillRect(x1, y1-4, w+4, h+4, GxEPD_BLACK);
-      display.setTextColor(GxEPD_WHITE);
-      display.print((char*)lowBatChar);
-      updateWindow(x1, y1-4, w+4, h+4);
-      display.setTextColor(GxEPD_BLACK);
+      displayWarning(lowBatString, displayHeight()-12);
       return true;
     } else {
       return false;
