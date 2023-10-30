@@ -46,7 +46,7 @@ String floatToString(float number, int decimals) {
 
   char buffer[15]; 
 
-  dtostrf(number, 6, decimals, buffer); /
+  dtostrf(number, 6, decimals, buffer);
 
   for (int i = 0; i < strlen(buffer); i++) {
     if (buffer[i] == '.') {
