@@ -1,4 +1,5 @@
 #include <ArduinoJson.h>
+#include "Constants.h"
 
 int getWalletBalance() {
   Serial.println("Getting wallet details...");
@@ -16,12 +17,14 @@ int getWalletBalance() {
   {
     Serial.print("deserializeJson() failed: ");
     Serial.println(error.f_str());
+    return NOT_SPECIFIED;
   }
 
   String walletName = doc["name"];
 
   if (walletName == "null") {
     Serial.println("ERROR: could not find wallet details on lnbits host " + String(lnbitsHost) + " with invoice/read key " + String(invoiceKey) + " so something's wrong! Did you make a typo?");
+    return NOT_SPECIFIED;
   } else {
     Serial.print("Wallet name: " + walletName);
   }
