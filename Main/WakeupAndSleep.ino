@@ -3,7 +3,7 @@
 
 #define BUTTON_PIN_BITMASK 4294967296 // 2^32 means GPIO32
 
-void print_reset_reasons() {
+String print_reset_reasons() {
     Serial.println("CPU0 reset reason:");
     print_reset_reason(rtc_get_reset_reason(0));
     verbose_print_reset_reason(rtc_get_reset_reason(0));
@@ -11,6 +11,8 @@ void print_reset_reasons() {
     Serial.println("CPU1 reset reason:");
     print_reset_reason(rtc_get_reset_reason(1));
     verbose_print_reset_reason(rtc_get_reset_reason(1));
+
+    return "cpu 0: " + String(rtc_get_reset_reason(0)) + " cpu 1: " + String(rtc_get_reset_reason(1));
 }
 
 void print_reset_reason(int reason) {
@@ -62,7 +64,7 @@ void verbose_print_reset_reason(int reason) {
 Method to print the reason by which ESP32
 has been awaken from sleep
 */
-void print_wakeup_reason(){
+String print_wakeup_reason(){
   esp_sleep_wakeup_cause_t wakeup_reason;
 
   wakeup_reason = esp_sleep_get_wakeup_cause();
@@ -77,8 +79,7 @@ void print_wakeup_reason(){
     default : Serial.printf("Wakeup was not caused by deep sleep, wakeup reason: %d\n",wakeup_reason); break;
   }
 
-  int reset_reason = rtc_get_reset_reason(0); 
-  Serial.printf("Reset Reason (%d): ", reset_reason);
+  return "Wakeup Reason (%d): " + String(wakeup_reason);
 }
 
 /*
