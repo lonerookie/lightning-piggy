@@ -91,7 +91,7 @@ void loop() {
     display.fillScreen(GxEPD_WHITE);
     updateWindow(0, 0, displayWidth(), displayHeight());
 
-    showLogo(epd_bitmap_Bitcoin, 55, 55, (displayWidth() / 2) + 71, 67);
+    showLogo(epd_bitmap_Bitcoin, 55, 55, (displayWidth() / 2) + 70, 67);
 
     int balance = getWalletBalance();
 
