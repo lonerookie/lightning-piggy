@@ -35,7 +35,7 @@ float getBitcoinPrice() {
     btcPrice = doc["bpi"]["DKK"]["rate_float"];
   }
 
-  Serial.print("BTC Price: ");
-  Serial.println(btcPrice);
+  Serial.println("BTC Price" + String(btcPrice, 2));
+
   return btcPrice;
 }

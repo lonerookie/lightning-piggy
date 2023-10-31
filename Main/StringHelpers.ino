@@ -5,10 +5,7 @@ String formatFloatWithSeparator(float number)
   }
 
   int numberAsInt = (int)number; 
-  Serial.println("numberAsInt" + String(numberAsInt));
-
   int remainder = numberAsInt % 1000;
-  Serial.println("remainder" + String(remainder));
   return String(number / 1000.0f, 0) + getCurrentCurrencyThousandsSeparator() + String(remainder);
 }
 
