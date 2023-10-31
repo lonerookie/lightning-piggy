@@ -119,7 +119,8 @@ void loop() {
     getLNURLPayments(2, xBeforeLNURLp, yAfterBalance);
 
     float btcPrice = getBitcoinPrice();
-    Serial.println("btcPrice" + String(btcPrice, 2));
+
+    String currentTime = getTimeFromNTP(); 
 
     bool btcPriceOk = btcPrice != NOT_SPECIFIED;
     if (!btcPriceOk) {
@@ -128,7 +129,7 @@ void loop() {
     if (btcPriceOk && balanceOk) {
         float balanceValue = btcPrice / 100000000 * balance;
         Serial.println("balanceValue" + String(balanceValue, 2));
-        displayWarning(" " + floatToString(balanceValue, 2) + getCurrentCurrencyCode() + " (" + formatFloatWithSeparator(btcPrice) + ")", displayHeight() - 8);
+        displayWarning(currentTime + " " + floatToString(balanceValue, 2) + getCurrentCurrencyCode() + " (" + formatFloatWithSeparator(btcPrice) + ")", displayHeight() - 8);
     }
 
     displayVoltageWarning();
