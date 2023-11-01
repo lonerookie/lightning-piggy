@@ -103,7 +103,7 @@ void loop() {
        yAfterBalance = printBalance(balance);
     }
     else {
-       displayWarning("GET WALLET ERROR", 30);
+       displayBoldMessage("GET WALLET ERROR", 30);
     }
 
     String lnurlp = getLNURLp();
@@ -124,14 +124,15 @@ void loop() {
 
     bool btcPriceOk = btcPrice != NOT_SPECIFIED;
     if (!btcPriceOk) {
-      displayWarning("GET BTC PRICE ERROR", 30);
+      displayBoldMessage("GET BTC PRICE ERROR", 30);
     }
     if (btcPriceOk && balanceOk) {
         float balanceValue = btcPrice / 100000000 * balance;
         Serial.println("balanceValue" + String(balanceValue, 2));
-        displayWarning(currentTime + " " + floatToString(balanceValue, 2) + getCurrentCurrencyCode() + " (" + formatFloatWithSeparator(btcPrice) + ")", displayHeight() - 8);
+        displayBoldMessage(floatToString(balanceValue, 2) + getCurrentCurrencyCode() + " (" + formatFloatWithSeparator(btcPrice) + ")", displayHeight() - 4);
     }
 
+    displayTime(currentTime);
     displayVoltageWarning();
 
     if (wifiConnected()) checkShowUpdateAvailable();

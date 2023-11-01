@@ -186,6 +186,15 @@ int printBalance(int balance) {
     return h;
 }
 
+void displayTime(String time) {
+    Serial.println("displayTime: " + time);
+   
+    setFont(1);
+    display.setCursor(204, 120);
+    display.setTextColor(GxEPD_BLACK);
+    display.print(time);
+    updateWindow(0, 0, displayWidth() - 1, displayHeight() - 1);
+}
 
 void printTextCentered(char* str) {
     int16_t x1, y1;
@@ -211,7 +220,7 @@ void showLogo(const unsigned char logo [], int sizeX, int sizeY, int posX, int p
   updateWindow(posX, posY, sizeX, sizeY);
 }
 
-void displayWarning(String text, int y) {
+void displayBoldMessage(String text, int y) {
     Serial.println("Displaying warning: " + text);
     int16_t x1, y1;
     uint16_t w, h;
