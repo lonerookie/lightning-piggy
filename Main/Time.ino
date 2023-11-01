@@ -1,5 +1,5 @@
 String getTimeFromNTP() {
-  String timeData = getEndpointData("worldtimeapi.org", "/api/timezone/Europe/Copenhagen", false);
+  String timeData = getEndpointData("worldtimeapi.org", "/api/timezone/" + String(timezone), false);
 
   DynamicJsonDocument doc(8192); 
 

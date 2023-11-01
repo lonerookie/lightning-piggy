@@ -17,5 +17,7 @@ const char* checkUpdateHost = "m.lightningpiggy.com";
 
 const int sleepTimeMinutes = 2;
 
-const int btcPriceCurrency = CURRENCY_DKK;
+const int btcPriceCurrency = CURRENCY_UDS;
+
+const char* timezone = "Europe/Copenhagen";
 
