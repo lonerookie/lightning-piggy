@@ -1,10 +1,9 @@
 // Array of Bitcoin slogans
 String bitcoinSlogans[] = {
-  "It’s gold for nerds",
+  "Bitcoin is gold for nerds",
   "In Bitcoin we trust.",
   "Be your own bank.",
-  "HODL",
-  "Everything Divided by 21 Million"
+  "HODL"
 };
 
 
