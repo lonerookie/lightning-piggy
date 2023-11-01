@@ -5,35 +5,43 @@ String formatFloatWithSeparator(float number)
   }
 
   int numberAsInt = (int)number; 
+  float thousands = number / 1000.0f;
   int remainder = numberAsInt % 1000;
-  return String(number / 1000.0f, 0) + getCurrentCurrencyThousandsSeparator() + String(remainder);
+
+  return String(thousands, 0) + getCurrentCurrencyThousandsSeparator() + String(remainder);
 }
 
 String getCurrentCurrencyCode() {
-  if (btcPriceCurrency == CURRENCY_USD) {
-    return "USD";
+  switch (btcPriceCurrency) {
+    case CURRENCY_USD:
+      return "$";
+    case CURRENCY_DKK:
+      return "KR";
+    default:
+      return "NA";
   }
-  else if (btcPriceCurrency == CURRENCY_DKK) {
-    return "KR";
-  } 
 }
 
 char getCurrentCurrencyDecimalSeparator() {
-  if (btcPriceCurrency == CURRENCY_USD) {
-    return '.';
+  switch (btcPriceCurrency) {
+    case CURRENCY_USD:
+      return '.';
+    case CURRENCY_DKK:
+      return ',';
+    default:
+      return ' ';
   }
-  else if (btcPriceCurrency == CURRENCY_DKK) {
-    return ',';
-  } 
 }
 
-String getCurrentCurrencyThousandsSeparator() {
-  if (btcPriceCurrency == CURRENCY_USD) {
-    return ",.";
+char getCurrentCurrencyThousandsSeparator() {
+  switch (btcPriceCurrency) {
+    case CURRENCY_USD:
+      return ',';
+    case CURRENCY_DKK:
+      return '.';
+    default:
+      return ' ';
   }
-  else if (btcPriceCurrency == CURRENCY_DKK) {
-    return ".";
-  } 
 }
 
 String floatToString(float number, int decimals) {

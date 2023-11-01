@@ -92,7 +92,7 @@ void loop() {
     display.fillScreen(GxEPD_WHITE);
     updateWindow(0, 0, displayWidth(), displayHeight());
 
-    showLogo(epd_bitmap_Bitcoin, 44, 44, (displayWidth() / 2) + 76, 60);
+    showLogo(epd_bitmap_Bitcoin, 44, 44, (displayWidth() / 2) + 76, 61);
 
     int balance = getWalletBalance();
 
@@ -130,7 +130,7 @@ void loop() {
     if (btcPriceOk && balanceOk) {
         float balanceValue = btcPrice / 100000000 * balance;
         Serial.println("balanceValue" + String(balanceValue, 2));
-        displayBoldMessage(floatToString(balanceValue, 2) + getCurrentCurrencyCode() + " (" + formatFloatWithSeparator(btcPrice) + ")", displayHeight() - 4);
+        displayBoldMessage(floatToString(balanceValue, 2) + getCurrentCurrencyCode() + " (" + formatFloatWithSeparator(btcPrice) + getCurrentCurrencyCode() + ")", displayHeight() - 4);
     }
 
     displayTime(currentTime);
