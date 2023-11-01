@@ -38,7 +38,7 @@ GxEPD_Class display(io, EPD_RSET, EPD_BUSY);
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("Staring Lightning Piggy " + getFullVersion());
+    Serial.println("Starting Lightning Piggy " + getFullVersion());
 
     // turn on the green LED-IO12 on the PCB, to show the board is on
     // it will turn off when the board hibernates
@@ -55,11 +55,12 @@ void setup() {
        delay(5000);
     }
 
-    displayFit("Message of the day:", 0, 20, displayWidth(), 40, 1); 
+    displayFit("Behold, today's pearl of wisdom", 0, 20, displayWidth(), 40, 1); 
+    displayFit("from Dad is...:", 0, 40, displayWidth(), 60, 1); 
 
     String slogan = getRandomBootSlogan();
     Serial.println("slogan " + slogan);
-    displayFit(slogan, 0, 40, displayWidth(), 160, 4); 
+    displayFit(slogan, 0, 65, displayWidth(), 160, 4); 
 
     delay(3000);
 
@@ -91,7 +92,7 @@ void loop() {
     display.fillScreen(GxEPD_WHITE);
     updateWindow(0, 0, displayWidth(), displayHeight());
 
-    showLogo(epd_bitmap_Bitcoin, 55, 55, (displayWidth() / 2) + 70, 67);
+    showLogo(epd_bitmap_Bitcoin, 44, 44, (displayWidth() / 2) + 76, 60);
 
     int balance = getWalletBalance();
 
@@ -116,7 +117,7 @@ void loop() {
         xBeforeLNURLp = showLNURLpQR(lnurlp);
     }
 
-    getLNURLPayments(2, xBeforeLNURLp, yAfterBalance);
+    getLNURLPayments(2, xBeforeLNURLp - 10, yAfterBalance);
 
     float btcPrice = getBitcoinPrice();
 
