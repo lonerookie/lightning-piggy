@@ -55,8 +55,14 @@ void setup() {
        delay(5000);
     }
 
-    displayFit("Behold, today's pearl of wisdom", 0, 20, displayWidth(), 40, 1); 
-    displayFit("from Dad is...:", 0, 40, displayWidth(), 60, 1); 
+    if (settingLanguage == LANGUAGE_EN_US) {
+      displayFit("Behold, today's pearl of wisdom", 0, 20, displayWidth(), 40, 1); 
+      displayFit("from Dad is...:", 0, 40, displayWidth(), 60, 1); 
+    }
+    else if (settingLanguage == LANGUAGE_DA){
+      displayFit("Klar! Her kommer dagens perle af", 0, 20, displayWidth(), 40, 1); 
+      displayFit("visdom fra far...:", 0, 40, displayWidth(), 60, 1); 
+    }
 
     String slogan = getRandomBootSlogan();
     Serial.println("slogan " + slogan);
@@ -124,9 +130,6 @@ void loop() {
     String currentTime = getTimeFromNTP(); 
 
     bool btcPriceOk = btcPrice != NOT_SPECIFIED;
-    if (!btcPriceOk) {
-      displayBoldMessage("GET BTC PRICE ERROR", 30);
-    }
     if (btcPriceOk && balanceOk) {
         float balanceValue = btcPrice / 100000000 * balance;
         Serial.println("balanceValue" + String(balanceValue, 2));

@@ -21,3 +21,5 @@ const int btcPriceCurrency = CURRENCY_USD;
 
 const char* timezone = "Europe/Copenhagen";
 
+const int settingLanguage = LANGUAGE_EN_US;
+

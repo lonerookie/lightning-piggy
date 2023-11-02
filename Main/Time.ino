@@ -11,13 +11,54 @@ String getTimeFromNTP() {
     return "na";
   }
 
-  Serial.println("Extracting time from received data");
+  Serial.println("Extracting weekday and time from received data");
 
-  const char* datetime = doc["datetime"];
-  String time = String(datetime);
-  time = time.substring(time.indexOf("T") + 1, time.indexOf("T") + 6); // Extract only the time (hh:mm)
+  String datetimeAsString = String(doc["datetime"]);
 
-  Serial.println("Current time is: " + time);
+  int dayOfWeek = doc["day_of_week"];
+  String dayOfWeekAsString = getDayOfWeekString(dayOfWeek);
+  String time = datetimeAsString.substring(datetimeAsString.indexOf("T") + 1, datetimeAsString.indexOf("T") + 6); // Extract only the time (hh:mm)
 
-  return time;
+  return dayOfWeekAsString + " " + time;
+}
+
+String getDayOfWeekString(int dayOfWeek) {
+  if (settingLanguage == LANGUAGE_EN_US) {
+     switch(dayOfWeek) {
+        case 0:
+          return "Mon";
+        case 1:
+          return "Tue";
+        case 2:
+          return "Wed";
+        case 3:
+          return "Thu";
+        case 4:
+          return "Fri";
+        case 5:
+          return "Sat";
+        case 6:
+          return "Sun";
+    }
+  }
+  else if (settingLanguage == LANGUAGE_DA) {
+     switch(dayOfWeek) {
+        case 0:
+          return "Man";
+        case 1:
+          return "Tir";
+        case 2:
+          return "Ons";
+        case 3:
+          return "Tors";
+        case 4:
+          return "Fre";
+        case 5:
+          return "Lør";
+        case 6:
+          return "Søn";
+    }
+  }
+
+  return "NA";
 }
