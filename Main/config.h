@@ -15,7 +15,7 @@ const char* invoiceKey = "REPLACETHISBYLNBITSKEY_REPLACETHISBYLNBITSKEY_REPLACET
 // Regular configuration values
 const char* checkUpdateHost = "m.lightningpiggy.com";
 
-const int sleepTimeMinutes = 2;
+const int sleepTimeMinutes = 60;
 
 const int btcPriceCurrency = CURRENCY_USD;
 
