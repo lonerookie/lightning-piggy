@@ -26,37 +26,37 @@ String getDayOfWeekString(int dayOfWeek) {
   if (settingLanguage == LANGUAGE_EN_US) {
      switch(dayOfWeek) {
         case 0:
-          return "Mon";
-        case 1:
-          return "Tue";
-        case 2:
-          return "Wed";
-        case 3:
-          return "Thu";
-        case 4:
-          return "Fri";
-        case 5:
-          return "Sat";
-        case 6:
           return "Sun";
+        case 1:
+          return "Mon";
+        case 2:
+          return "Tue";
+        case 3:
+          return "Wed";
+        case 4:
+          return "Thu";
+        case 5:
+          return "Fri";
+        case 6:
+          return "Sat";
     }
   }
   else if (settingLanguage == LANGUAGE_DA) {
      switch(dayOfWeek) {
         case 0:
-          return "Man";
-        case 1:
-          return "Tir";
-        case 2:
-          return "Ons";
-        case 3:
-          return "Tors";
-        case 4:
-          return "Fre";
-        case 5:
-          return "Lør";
-        case 6:
           return "Søn";
+        case 1:
+          return "Man";
+        case 2:
+          return "Tir";
+        case 3:
+          return "Ons";
+        case 4:
+          return "Tor";
+        case 5:
+          return "Fre";
+        case 6:
+          return "Lør";
     }
   }
 
