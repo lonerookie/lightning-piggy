@@ -8,6 +8,7 @@
 //#define LILYGO_T5_V266
 
 #include <boards.h>
+#include <string.h>
 
 #include "logos.h"
 #include "config.h"
@@ -98,7 +99,7 @@ void loop() {
     display.fillScreen(GxEPD_WHITE);
     updateWindow(0, 0, displayWidth(), displayHeight());
 
-    showLogo(epd_bitmap_Bitcoin, 44, 44, (displayWidth() / 2) + 76, 61);
+    showLogo(epd_bitmap_Bitcoin, 40, 40, (displayWidth() / 2) + 78, 67);
 
     int balance = getWalletBalance();
 
@@ -132,8 +133,15 @@ void loop() {
     bool btcPriceOk = btcPrice != NOT_SPECIFIED;
     if (btcPriceOk && balanceOk) {
         float balanceValue = btcPrice / 100000000 * balance;
-        Serial.println("balanceValue" + String(balanceValue, 2));
-        displayBoldMessage(floatToString(balanceValue, 2) + getCurrentCurrencyCode() + " (" + formatFloatWithSeparator(btcPrice) + getCurrentCurrencyCode() + ")", displayHeight() - 4);
+        String balanceValueToShow = floatToString(balanceValue, 2) + getCurrentCurrencyCode();
+        Serial.println("balanceValue" + balanceValueToShow);
+
+        String currentBtcPriceToShow = formatFloatWithSeparator(btcPrice);
+        bool addCurrencyCodeToCurrentBtcPrice = strlen(currentBtcPriceToShow.c_str()) <= 6; 
+        if (addCurrencyCodeToCurrentBtcPrice) {
+           currentBtcPriceToShow += getCurrentCurrencyCode();
+        }
+        displayBoldMessage(" " + balanceValueToShow + " (" + currentBtcPriceToShow + ")", displayHeight() - 4);
     }
 
     displayTime(currentTime);

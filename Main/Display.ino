@@ -190,7 +190,7 @@ void displayTime(String time) {
     Serial.println("displayTime: " + time);
    
     setFont(1);
-    display.setCursor(190, 120);
+    display.setCursor(186, 120);
     display.setTextColor(GxEPD_BLACK);
     display.print(time);
     updateWindow(0, 0, displayWidth() - 1, displayHeight() - 1);
